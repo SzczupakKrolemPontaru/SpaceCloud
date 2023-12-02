@@ -1,4 +1,4 @@
-l<template>
+<template>
   <div class="formDiv">
     <form>
       <div>
@@ -26,13 +26,16 @@ l<template>
           Passwords do not match
         </div>
       </div>
-      <button type="submit" class="btn btn-outline-success">Submit</button>
+      <button @click="submitFormRegister" type="submit" class="btn btn-outline-success">
+        Submit
+      </button>
       <p>Already have an account? <a @click="goToLoginPage">Login</a></p>
     </form>
   </div>
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
@@ -45,6 +48,25 @@ export default {
   methods: {
     goToLoginPage() {
       this.$router.push({ name: "login" });
+    },
+    submitFormRegister() {
+      if (this.password !== this.passwordConfirm) {
+        this.showError = true;
+        return;
+      } else {
+        const formData = {
+          userName: this.uName,
+          userPassword: this.password,
+        };
+        axios
+          .post("http://localhost:8090/api/users", formData)
+          .then((response) => {
+            console.log(response.data);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
     },
   },
   watch: {
@@ -89,8 +111,5 @@ p {
   width: 50%;
   margin-top: 2%;
   height: 5%;
-}
-a:hover {
-  background-color: red;
 }
 </style>

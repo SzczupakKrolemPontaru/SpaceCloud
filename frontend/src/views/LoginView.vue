@@ -15,12 +15,15 @@
         />
       </div>
       <a @click="goToRegisterView">Create an account</a>
-      <button type="submit" class="btn btn-outline-success">Submit</button>
     </form>
+    <button @click="submitFormLogin" class="btn btn-outline-success">
+        Submit
+      </button>
   </div>
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
@@ -30,7 +33,25 @@ export default {
   },
   methods: {
     goToRegisterView() {
-      this.$router.push({ name: 'register' });
+      this.$router.push({ name: "register" });
+    },
+    submitFormLogin() {
+      const userName = this.uName;
+      axios
+        .get(`http://localhost:8090/api/users/${userName}`)
+        .then((response) => {
+          const userData = response.data[0];
+          if(this.password === userData.userPassword) {
+            this.$router.push({ name: 'container' })
+          } else {
+            this.$router.push({ name: 'container' });
+            alert("Incorrect password");
+          }
+        })
+        .catch((error) => {
+          alert("User does not exist");
+          console.error(error);
+        });
     },
   },
 };
@@ -58,17 +79,15 @@ input {
 }
 button {
   position: absolute;
-  top: 100%;
+  top: 60%;
   margin-top: 15%;
   width: 50%;
+  left: 25%;
 }
 a {
   position: absolute;
   top: 100%;
   left: 13%;
   margin-top: 5%;
-}
-a:hover {
-  background-color: red;
 }
 </style>
