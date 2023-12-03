@@ -57,7 +57,7 @@ export default {
         });
     },
   },
-  created() {
+  newUserCreated() {
   console.log(this.$route.query.userCreated);
   if (this.$route.query.userCreated) {
       alert('User was successfully created!');

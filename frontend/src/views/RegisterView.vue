@@ -57,7 +57,7 @@ export default {
       event.preventDefault();
       if (this.password.valueOf() !== this.passwordConfirm.valueOf()) {
         this.showError = true;
-        console.log("Passwords did not match, user was not created!");
+        alert("Passwords did not match, user was not created!");
         return;
       } else {
         const formData = {
