@@ -15,7 +15,7 @@ const routes = [
     component: LoginView
    },
    {
-    path: '/',
+    path: '/container',
     name: 'container',
     component: ContainerView
    }

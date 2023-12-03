@@ -19,7 +19,7 @@
       <button @click="submitFormLogin" class="btn btn-outline-success">
       Login
       </button>
-      <RegisterButton @click="goToRegisterView">Create an account</RegisterButton>
+      <b @click="goToRegisterView">Create an account</b>
     </form>
   </div>
 
@@ -39,6 +39,7 @@ export default {
       this.$router.push({ name: "register" });
     },
     submitFormLogin() {
+      event.preventDefault();
       const userName = this.uName;
       axios
         .get(`http://localhost:8090/api/users/${userName}`)
@@ -47,7 +48,7 @@ export default {
           if(this.password === userData.userPassword) {
             this.$router.push({ name: 'container' })
           } else {
-            this.$router.push({ name: 'container' });
+            //this.$router.push({ name: 'container' });
             alert("Incorrect password");
           }
         })
@@ -89,11 +90,11 @@ button {
   left: 25%;
   font-weight: bold;
 }
-RegisterButton {
+b {
   display: block;
   cursor: pointer;
 }
-RegisterButton:hover {
+b:hover {
   color: #007BFF; 
 }
 h1 {

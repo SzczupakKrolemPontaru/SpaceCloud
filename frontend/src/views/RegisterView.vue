@@ -33,7 +33,7 @@
       <button @click="submitFormRegister" type="submit" class="btn btn-outline-success">
         Confirm
       </button>
-      <LoginButton>Already have an account? <a @click="goToLoginPage">Login</a></LoginButton>
+      <b>Already have an account? <a @click="goToLoginPage">Login</a></b>
     </form>
   </div>
 </template>
@@ -75,8 +75,13 @@ export default {
   },
   watch: {
     passwordConfirm() {
-      if (this.password !== this.passwordConfirm) {
+      console.log('Password:', this.password);
+      console.log('Confirm Password:', this.passwordConfirm);
+      if (this.password.valueOf() !== this.passwordConfirm.valueOf()) {
         this.showError = true;
+      }
+      else {
+        this.showError = false;
       }
     },
   },
@@ -85,8 +90,8 @@ export default {
 
 <style scoped>
 h2 {
-  position:absolute;
-  top: -15%;
+  position: fixed;
+  top: 22%;
 }
 .formDiv {
   width: 40%;
@@ -109,6 +114,7 @@ input {
   margin-bottom: 5%;
 }
 button {
+  display: block;
   margin-top: 1%;
   width: 50%;
 }
@@ -128,12 +134,9 @@ h1 {
   top: 5%;
   left: 30%;
   font-size: 80px;
-} 
-LoginButton {
-  display: block;
-  cursor: pointer;
 }
-LoginButton:hover {
-  color: #007BFF; 
+b:hover {
+  color: #007BFF;
 }
+
 </style>
