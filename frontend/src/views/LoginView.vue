@@ -48,7 +48,6 @@ export default {
           if(this.password === userData.userPassword) {
             this.$router.push({ name: 'container' })
           } else {
-            //this.$router.push({ name: 'container' });
             alert("Incorrect password");
           }
         })
@@ -57,6 +56,12 @@ export default {
           console.error(error);
         });
     },
+  },
+  created() {
+  console.log(this.$route.query.userCreated);
+  if (this.$route.query.userCreated) {
+      alert('User was successfully created!');
+    }
   },
 };
 </script>

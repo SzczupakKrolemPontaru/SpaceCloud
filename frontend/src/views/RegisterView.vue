@@ -54,8 +54,10 @@ export default {
       this.$router.push({ name: "login" });
     },
     submitFormRegister() {
-      if (this.password !== this.passwordConfirm) {
+      event.preventDefault();
+      if (this.password.valueOf() !== this.passwordConfirm.valueOf()) {
         this.showError = true;
+        console.log("Passwords did not match, user was not created!");
         return;
       } else {
         const formData = {
@@ -70,13 +72,13 @@ export default {
           .catch((err) => {
             console.log(err);
           });
+          this.$router.push({ name: "login", query: { userCreated: true }});
       }
     },
   },
   watch: {
     passwordConfirm() {
-      console.log('Password:', this.password);
-      console.log('Confirm Password:', this.passwordConfirm);
+
       if (this.password.valueOf() !== this.passwordConfirm.valueOf()) {
         this.showError = true;
       }
