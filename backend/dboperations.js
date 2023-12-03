@@ -25,6 +25,20 @@ async function getUser(userName) {
   }
 }
 
+async function deleteUser(userName) {
+  try {
+    let pool = await sql.connect(config);
+    let user = await pool
+      .request()
+      .input("input_parameter", sql.VarChar, userName)
+      .query("DELETE from Users where userName = @input_parameter");
+    console.log("User deleted successfully");
+    return user.recordsets;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 async function addUser(user) {
   try {
     let pool = await sql.connect(config);
@@ -56,5 +70,6 @@ async function createContainerIfNotExists(userName) {
 module.exports = {
   getUsers: getUsers,
   getUser: getUser,
-  addUser: addUser
+  addUser: addUser,
+  deleteUser: deleteUser
 };
