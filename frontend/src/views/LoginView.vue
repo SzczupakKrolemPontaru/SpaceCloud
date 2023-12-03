@@ -2,6 +2,9 @@
   <h1>Personal Cloud Storage</h1>
   <div class="formDiv">
     <form>
+      <div class="alert alert-danger" role="alert" v-if="showAlert">
+        Invalid username or password
+      </div>
       <div>
         <label for="userName" class="form-label">User Name</label>
         <input type="text" placeholder="Username" id="userName" class="form-control" v-model="uName" />
@@ -32,6 +35,7 @@ export default {
     return {
       uName: "",
       password: "",
+      showAlert: false
     };
   },
   methods: {
@@ -40,6 +44,10 @@ export default {
     },
     submitFormLogin() {
       event.preventDefault();
+      if(this.uName === "" || this.password === "") {
+        this.showAlert = true;
+        return;
+      }
       const userName = this.uName;
       axios
         .get(`http://localhost:8090/api/users/${userName}`)
@@ -48,7 +56,7 @@ export default {
           if(this.password === userData.userPassword) {
             this.$router.push({ name: 'container' })
           } else {
-            alert("Incorrect password");
+            this.showAlert = true;
           }
         })
         .catch((error) => {
@@ -100,12 +108,15 @@ b {
   cursor: pointer;
 }
 b:hover {
-  color: #007BFF; 
+  color: #007BFF;
 }
 h1 {
   position: absolute;
   top: 5%;
   left: 30%;
   font-size: 80px;
-} 
+}
+.alert {
+  width: 50%;
+}
 </style>

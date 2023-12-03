@@ -94,6 +94,7 @@ export default {
 h2 {
   position: fixed;
   top: 22%;
+  left: 43%;
 }
 .formDiv {
   width: 40%;
@@ -140,5 +141,4 @@ h1 {
 b:hover {
   color: #007BFF;
 }
-
 </style>
