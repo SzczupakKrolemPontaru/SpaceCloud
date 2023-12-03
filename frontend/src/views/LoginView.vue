@@ -1,25 +1,28 @@
 <template>
+  <h1>Personal Cloud Storage</h1>
   <div class="formDiv">
     <form>
       <div>
         <label for="userName" class="form-label">User Name</label>
-        <input type="text" id="userName" class="form-control" v-model="uName" />
+        <input type="text" placeholder="Username" id="userName" class="form-control" v-model="uName" />
       </div>
       <div>
-        <label for="password" class="form-label">Password</label>
+        <label for="password"  class="form-label">Password</label>
         <input
           type="password"
           id="password"
           class="form-control"
+          placeholder="Password"
           v-model="password"
         />
       </div>
-      <a @click="goToRegisterView">Create an account</a>
-    </form>
-    <button @click="submitFormLogin" class="btn btn-outline-success">
-        Submit
+      <button @click="submitFormLogin" class="btn btn-outline-success">
+      Login
       </button>
+      <RegisterButton @click="goToRegisterView">Create an account</RegisterButton>
+    </form>
   </div>
+
 </template>
 
 <script>
@@ -59,13 +62,14 @@ export default {
 
 <style scoped>
 .formDiv {
-  width: 30%;
-  height: 50%;
+  width: 40%;
+  height: 60%;
   margin: 0 auto;
   border: 2px solid black;
   position: absolute;
-  top: 25%;
-  left: 35%;
+  top: 20%;
+  left: 30%;
+  background-color: #f5f5f5;
 }
 form {
   position: relative;
@@ -74,20 +78,28 @@ form {
 }
 input {
   width: 50%;
-  margin-top: 1%;
-  margin-bottom: 2%;
+  margin-top: 0%;
+  margin-bottom: 5%;
 }
 button {
-  position: absolute;
-  top: 60%;
-  margin-top: 15%;
+  display: block;
+  top: 10%;
+  margin-top: 5%;
   width: 50%;
   left: 25%;
+  font-weight: bold;
 }
-a {
+RegisterButton {
+  display: block;
+  cursor: pointer;
+}
+RegisterButton:hover {
+  color: #007BFF; 
+}
+h1 {
   position: absolute;
-  top: 100%;
-  left: 13%;
-  margin-top: 5%;
-}
+  top: 5%;
+  left: 30%;
+  font-size: 80px;
+} 
 </style>

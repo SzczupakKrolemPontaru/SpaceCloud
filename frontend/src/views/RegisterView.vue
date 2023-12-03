@@ -1,9 +1,11 @@
 <template>
+  <h1>Personal Cloud Storage</h1>
   <div class="formDiv">
     <form>
+      <h2>Create an account</h2>
       <div>
         <label for="userName" class="form-label">User Name</label>
-        <input type="text" id="userName" class="form-control" v-model="uName" />
+        <input type="text" id="userName" placeholder="Username" class="form-control" v-model="uName" />
       </div>
       <div>
         <label for="password" class="form-label">Password</label>
@@ -11,6 +13,7 @@
           type="password"
           id="password"
           class="form-control"
+          placeholder="Password"
           v-model="password"
         />
       </div>
@@ -20,6 +23,7 @@
           type="password"
           id="passwordConfirm"
           class="form-control"
+          placeholder="Confirm Password"
           v-model="passwordConfirm"
         />
         <div class="alert alert-danger" role="alert" v-if="showError">
@@ -27,9 +31,9 @@
         </div>
       </div>
       <button @click="submitFormRegister" type="submit" class="btn btn-outline-success">
-        Submit
+        Confirm
       </button>
-      <p>Already have an account? <a @click="goToLoginPage">Login</a></p>
+      <LoginButton>Already have an account? <a @click="goToLoginPage">Login</a></LoginButton>
     </form>
   </div>
 </template>
@@ -80,25 +84,32 @@ export default {
 </script>
 
 <style scoped>
+h2 {
+  position:absolute;
+  top: -15%;
+}
 .formDiv {
-  width: 30%;
-  height: 50%;
+  width: 40%;
+  height: 60%;
   margin: 0 auto;
   border: 2px solid black;
   position: absolute;
-  top: 25%;
-  left: 35%;
+  top: 20%;
+  left: 30%;
+  background-color: #f5f5f5;
 }
 form {
   position: relative;
   left: 25%;
-  top: 5%;
+  top: 15%;
 }
 input {
   width: 50%;
+  margin-top: 0%;
+  margin-bottom: 5%;
 }
 button {
-  margin-top: 4%;
+  margin-top: 1%;
   width: 50%;
 }
 p {
@@ -111,5 +122,18 @@ p {
   width: 50%;
   margin-top: 2%;
   height: 5%;
+}
+h1 {
+  position: absolute;
+  top: 5%;
+  left: 30%;
+  font-size: 80px;
+} 
+LoginButton {
+  display: block;
+  cursor: pointer;
+}
+LoginButton:hover {
+  color: #007BFF; 
 }
 </style>
