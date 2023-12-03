@@ -32,6 +32,8 @@ async function deleteUser(userName) {
       .request()
       .input("input_parameter", sql.VarChar, userName)
       .query("DELETE from Users where userName = @input_parameter");
+
+    await deleteContainerIfExists(userName);  
     console.log("User deleted successfully");
     return user.recordsets;
   } catch (err) {
