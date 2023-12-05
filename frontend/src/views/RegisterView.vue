@@ -5,7 +5,13 @@
       <h2>Create an account</h2>
       <div>
         <label for="userName" class="form-label">User Name</label>
-        <input type="text" id="userName" placeholder="Username" class="form-control" v-model="uName" />
+        <input
+          type="text"
+          id="userName"
+          placeholder="Username"
+          class="form-control"
+          v-model="uName"
+        />
       </div>
       <div>
         <label for="password" class="form-label">Password</label>
@@ -30,7 +36,11 @@
           Passwords do not match
         </div>
       </div>
-      <button @click="submitFormRegister" type="submit" class="btn btn-outline-success">
+      <button
+        @click="submitFormRegister"
+        type="submit"
+        class="btn btn-outline-success"
+      >
         Confirm
       </button>
       <b>Already have an account? <a @click="goToLoginPage">Login</a></b>
@@ -72,17 +82,21 @@ export default {
           .catch((err) => {
             console.log(err);
           });
-          this.$router.push({ name: "login", query: { userCreated: true }});
+        this.$router.push({ name: "login", query: { userCreated: true } });
+      }
+    },
+    newUserCreated() {
+      console.log(this.$route.query.userCreated);
+      if (this.$route.query.userCreated) {
+        alert("User was successfully created!");
       }
     },
   },
   watch: {
     passwordConfirm() {
-
       if (this.password.valueOf() !== this.passwordConfirm.valueOf()) {
         this.showError = true;
-      }
-      else {
+      } else {
         this.showError = false;
       }
     },
@@ -139,6 +153,6 @@ h1 {
   font-size: 80px;
 }
 b:hover {
-  color: #007BFF;
+  color: #007bff;
 }
 </style>
