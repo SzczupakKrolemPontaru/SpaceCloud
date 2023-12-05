@@ -7,10 +7,16 @@
       </div>
       <div>
         <label for="userName" class="form-label">User Name</label>
-        <input type="text" placeholder="Username" id="userName" class="form-control" v-model="uName" />
+        <input
+          type="text"
+          placeholder="Username"
+          id="userName"
+          class="form-control"
+          v-model="uName"
+        />
       </div>
       <div>
-        <label for="password"  class="form-label">Password</label>
+        <label for="password" class="form-label">Password</label>
         <input
           type="password"
           id="password"
@@ -20,12 +26,11 @@
         />
       </div>
       <button @click="submitFormLogin" class="btn btn-outline-success">
-      Login
+        Login
       </button>
       <b @click="goToRegisterView">Create an account</b>
     </form>
   </div>
-
 </template>
 
 <script>
@@ -35,7 +40,7 @@ export default {
     return {
       uName: "",
       password: "",
-      showAlert: false
+      showAlert: false,
     };
   },
   methods: {
@@ -44,17 +49,20 @@ export default {
     },
     submitFormLogin() {
       event.preventDefault();
-      if(this.uName === "" || this.password === "") {
+      if (this.uName === "" || this.password === "") {
         this.showAlert = true;
         return;
       }
       const userName = this.uName;
       axios
-        .get(`http://localhost:8090/api/users/${userName}`)
+        .get(`http://localhost:8090/api/db/getUser/${userName}`)
         .then((response) => {
           const userData = response.data[0];
-          if(this.password === userData.userPassword) {
-            this.$router.push({ name: 'container' })
+          if (this.password === userData.userPassword) {
+            this.$router.push({
+              name: "container",
+              params: { userName: userName },
+            });
           } else {
             this.showAlert = true;
           }
@@ -102,7 +110,7 @@ b {
   cursor: pointer;
 }
 b:hover {
-  color: #007BFF;
+  color: #007bff;
 }
 h1 {
   position: absolute;
