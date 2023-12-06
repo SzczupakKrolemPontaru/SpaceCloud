@@ -4,7 +4,6 @@ async function createContainerIfNotExists(userName) {
   const exists = await containerClient.exists();
   if (!exists) {
     await containerClient.create();
-    console.log("Container " + userName + " created");
   }
 }
 async function uploadFile(userName, file) {
@@ -17,7 +16,7 @@ async function listFiles(userName) {
   const files = [];
   for await (const blob of containerClient.listBlobsFlat()) {
     const tempBlockBlobClient = containerClient.getBlockBlobClient(blob.name);
-    files.push(tempBlockBlobClient);
+    files.push(blob.name);
   }
   return files;
 }

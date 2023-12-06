@@ -61,7 +61,7 @@ export default {
           if (this.password === userData.userPassword) {
             this.$router.push({
               name: "container",
-              params: { userName: userName },
+              params: { uName: userName },
             });
           } else {
             this.showAlert = true;
