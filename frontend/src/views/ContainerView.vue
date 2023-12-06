@@ -25,12 +25,12 @@ export default {
     data() {
         return {
             blobFiles: [],
-            uName: ''
+            userName: ''
         }
     },
     mounted() {
-        const userName = this.$route.params.uName;
-        axios.get(`http://localhost:8090/api/blob/listFiles/${userName}`)
+        this.userName = this.$route.params.uName;
+        axios.get(`http://localhost:8090/api/blob/listFiles/${this.userName}`)
             .then((response) => {
                 this.blobFiles = response.data;
                 console.log(this.blobFiles);
@@ -42,8 +42,7 @@ export default {
     methods: {
         deleteFile(fileName) {
             console.log(fileName);
-            const userName = this.$route.params.uName;
-            axios.delete(`http://localhost:8090/api/blob/deleteFile/${userName}/${fileName}`)
+            axios.delete(`http://localhost:8090/api/blob/deleteFile/${this.userName}/${fileName}`)
                 .then((response) => {
                     console.log(response);
                 })
