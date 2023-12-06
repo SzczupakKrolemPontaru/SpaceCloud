@@ -16,14 +16,20 @@ async function listFiles(userName) {
   const files = [];
   for await (const blob of containerClient.listBlobsFlat()) {
     const tempBlockBlobClient = containerClient.getBlockBlobClient(blob.name);
-    files.push(blob.name);
+    files.push(blob.name); 
+    /* Do zastanowienia się jak zwracać plik do pobrania. Na ten moment zwracana jest tylko nazwa plików, ale trzeba jakoś zwrócić kod biarny pliku żeby można go było potem pobrać*/
   }
   return files;
 }
 async function deleteFile(userName, file) {
   const containerClient = blobServiceClient.getContainerClient(userName);
   const blockBlobClient = containerClient.getBlockBlobClient(file);
-  containerClient.delteBlob(file);
+  try {
+    await blockBlobClient.delete(file);
+  }
+  catch (error) {
+    console.log(error);
+  }
 }
 
 module.exports = {
