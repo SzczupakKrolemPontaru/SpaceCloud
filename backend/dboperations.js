@@ -1,4 +1,5 @@
 var config = require("./dbConfig");
+var blob = require("./blobOperations");
 const sql = require("mssql");
 
 async function getUser(userName) {
@@ -44,7 +45,7 @@ async function addUser(user) {
         .input("userName", sql.VarChar, user.userName)
         .input("userPassword", sql.VarChar, user.userPassword)
         .execute("InsertUser");
-      await createContainerIfNotExists(user.userName);
+      await blob.createContainerIfNotExists(user.userName);
       return insertUser.recordsets;
     }
   } catch (err) {

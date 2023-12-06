@@ -3,7 +3,8 @@ async function createContainerIfNotExists(userName) {
   const containerClient = blobServiceClient.getContainerClient(userName);
   const exists = await containerClient.exists();
   if (!exists) {
-    await containerClient.create_container();
+    await containerClient.create();
+    console.log("Container " + userName + " created");
   }
 }
 async function uploadFile(userName, file) {
