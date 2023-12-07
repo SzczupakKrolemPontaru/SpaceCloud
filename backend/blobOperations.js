@@ -6,10 +6,10 @@ async function createContainerIfNotExists(userName) {
     await containerClient.create();
   }
 }
-async function uploadFile(userName, file) {
+async function uploadFile(userName, file, fileName) {
   const containerClient = blobServiceClient.getContainerClient(userName);
-  const blockBlobClient = containerClient.getBlockBlobClient(file.name);
-  await blockBlobClient.upload(file, file.length);
+  const blockBlobClient = containerClient.getBlockBlobClient(fileName);
+  await blockBlobClient.upload(file.buffer, file.buffer.length);
 }
 async function listFiles(userName) {
   const containerClient = blobServiceClient.getContainerClient(userName);
@@ -17,7 +17,6 @@ async function listFiles(userName) {
   for await (const blob of containerClient.listBlobsFlat()) {
     const tempBlockBlobClient = containerClient.getBlockBlobClient(blob.name);
     files.push(blob.name);
-    /* Do zastanowienia się jak zwracać plik do pobrania. Na ten moment zwracana jest tylko nazwa plików, ale trzeba jakoś zwrócić kod biarny pliku żeby można go było potem pobrać*/
   }
   return files;
 }

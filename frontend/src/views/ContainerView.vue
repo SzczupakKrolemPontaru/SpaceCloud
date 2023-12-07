@@ -16,6 +16,8 @@
                 </tr>
             </tbody>
         </table>
+        <input type="file" ref="fileInput" style="display: none" @change="handleFileUpload"/>
+        <button @click="triggerFileUpload">Dodaj plik</button>
     </div>
 </template>
 
@@ -49,8 +51,28 @@ export default {
                 .catch((error) => {
                     console.error(error);
                 });
-        }
+        },
+        triggerFileUpload() {
+            this.$refs.fileInput.click();
+        },
+        handleFileUpload(event) {
+            const file = event.target.files[0];
+            let formData = new FormData();
+            formData.append('file', file);
+            axios.post(`http://localhost:8090/api/blob/sendFile/${this.userName}`, formData, {
+                headers: {
+                'Content-Type': 'multipart/form-data'
+                }
+            })
+            .then((response) => {
+                console.log(response);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+            }
     }
+
 }
 </script>
 

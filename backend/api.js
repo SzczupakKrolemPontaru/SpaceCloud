@@ -1,5 +1,7 @@
 const dboperations = require("./dbOperations");
 const bloboperations = require("./blobOperations");
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() });
 
 var express = require("express");
 var bodyParser = require("body-parser");
@@ -35,9 +37,13 @@ router.route("/db/addUser/").post((request, response) => {
   });
 });
 
-router.route("/blob/sendFile/:userName").post((request, response) => {
-  let file = request.files.file;
-  bloboperations.uploadFile(request.params.userName, file).then((result) => {
+router.route("/blob/sendFile/:userName").post(upload.single('file'),(request, response) => {  
+  if (!request.file) {
+    return response.status(400).json({ error: 'No file uploaded' });
+  }
+  let file = request.file;
+  let fileName = request.file.originalname;
+  bloboperations.uploadFile(request.params.userName, file, fileName).then((result) => {
     response.status(201).json(result);
   });
 });
