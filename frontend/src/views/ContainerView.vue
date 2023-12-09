@@ -70,24 +70,23 @@ export default {
         handleFileUpload(event) {
             event.preventDefault();
             const files = event.dataTransfer.files;
-            let formData = new FormData();
-
             for (let i = 0; i < files.length; i++) {
-                formData.append('file', files[i]);
+                let file = files[i];
+                let formData = new FormData();
+                formData.append("file", file);
+                axios.post(`http://localhost:8090/api/blob/sendFile/${this.userName}`, formData, {
+                    headers: {
+                    'Content-Type': 'multipart/form-data'
+                    }
+                })
+                .then((response) => {
+                    console.log(response);
+                    this.refreshTableData();
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
             }
-
-            axios.post(`http://localhost:8090/api/blob/sendFile/${this.userName}`, formData, {
-                headers: {
-                'Content-Type': 'multipart/form-data'
-                }
-            })
-            .then((response) => {
-                console.log(response);
-                this.refreshTableData();
-            })
-            .catch((error) => {
-                console.error(error);
-            });
         },
         downloadFile(fileName) {
             console.log(fileName);
