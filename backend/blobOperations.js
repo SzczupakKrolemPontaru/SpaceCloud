@@ -1,4 +1,5 @@
 const blobServiceClient = require("./bsConfig");
+
 async function createContainerIfNotExists(userName) {
   const containerClient = blobServiceClient.getContainerClient(userName);
   const exists = await containerClient.exists();
@@ -26,9 +27,19 @@ async function deleteFile(userName, file) {
   await blockBlobClient.delete();
 }
 
+async function downloadFile(userName, fileName) {
+  const containerClient = blobServiceClient.getContainerClient(userName);
+  const blockBlobClient = containerClient.getBlockBlobClient(fileName);
+
+  const response = await blockBlobClient.download();
+  return response.readableStreamBody;
+}
+
+
 module.exports = {
   createContainerIfNotExists: createContainerIfNotExists,
   uploadFile: uploadFile,
   listFiles: listFiles,
-  deleteFile: deleteFile
+  deleteFile: deleteFile,
+  downloadFile: downloadFile
 };

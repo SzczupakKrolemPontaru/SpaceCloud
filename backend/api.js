@@ -55,5 +55,15 @@ router.route("/blob/deleteFile/:userName/:fileName").delete((request, response) 
       response.status(201).json(result);
     });
 });
+
+router.route("/blob/downloadFile/:userName/:fileName").get((request, response)  => {
+  bloboperations
+    .downloadFile(request.params.userName, request.params.fileName)
+    .then((result) => {
+      response.status(201);
+      result.pipe(response);
+    });
+});
+
 var port = process.env.PORT || 8090;
 app.listen(port);

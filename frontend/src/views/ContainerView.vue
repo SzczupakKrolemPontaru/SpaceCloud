@@ -11,18 +11,18 @@
             <tbody>
                 <tr v-for="(file, index) in blobFiles" :key="index">
                     <td>{{ file }}</td>
-                    <td><button type="button" class="btn btn-success"> Download </button></td>
+                    <td><button @click="downloadFile(file)" type="button" class="btn btn-success"> Download </button></td>
                     <td><button @click="deleteFile(file)" type="button" class="btn btn-danger"> Delete </button></td>
                 </tr>
             </tbody>
         </table>
-        <input type="file" ref="fileInput" style="display: none" @change="handleFileUpload"/>
-        <button @click="triggerFileUpload">Dodaj plik</button>
+        <div class="" id="dropzone" @dragover.prevent @drop="handleDrop">Przeciągnij i upuść plik tutaj</div>
     </div>
 </template>
 
 <script>
 import axios from "axios";
+import saveAs from 'file-saver';
 export default {
     data() {
         return {
@@ -43,7 +43,6 @@ export default {
     },
     methods: {
         deleteFile(fileName) {
-            console.log(fileName);
             axios.delete(`http://localhost:8090/api/blob/deleteFile/${this.userName}/${fileName}`)
                 .then((response) => {
                     console.log(response);
@@ -51,9 +50,6 @@ export default {
                 .catch((error) => {
                     console.error(error);
                 });
-        },
-        triggerFileUpload() {
-            this.$refs.fileInput.click();
         },
         handleFileUpload(event) {
             const file = event.target.files[0];
@@ -70,8 +66,29 @@ export default {
             .catch((error) => {
                 console.error(error);
             });
+        },
+        handleDrop(e) {
+            e.preventDefault();
+            let files = e.dataTransfer.files;
+            if (files.length > 0) {
+                let dt = new DataTransfer();
+                dt.items.add(files[0]);
+                this.$refs.fileInput.files = dt.files;
+                this.handleFileUpload({ target: this.$refs.fileInput });
             }
-    }
+        }, 
+        downloadFile(fileName) {
+            console.log(fileName);
+            axios.get(`http://localhost:8090/api/blob/downloadFile/${this.userName}/${fileName}`, {
+                responseType: "blob",
+            }).then((response) => {
+                saveAs(new Blob([response.data]), fileName);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+        }
+    }  
 
 }
 </script>
