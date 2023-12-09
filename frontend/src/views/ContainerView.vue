@@ -16,7 +16,14 @@
                 </tr>
             </tbody>
         </table>
-        <div class="" id="dropzone" @dragover.prevent @drop="handleDrop">Przeciągnij i upuść plik tutaj</div>
+        <div
+            id="dropzone"
+            @dragover.prevent
+            @dragenter.prevent
+            @drop="handleFileUpload"
+        >
+            Drop files here
+        </div>
     </div>
 </template>
 
@@ -35,7 +42,6 @@ export default {
         axios.get(`http://localhost:8090/api/blob/listFiles/${this.userName}`)
             .then((response) => {
                 this.blobFiles = response.data;
-                console.log(this.blobFiles);
             })
             .catch((error) => {
                 console.error(error);
@@ -46,15 +52,30 @@ export default {
             axios.delete(`http://localhost:8090/api/blob/deleteFile/${this.userName}/${fileName}`)
                 .then((response) => {
                     console.log(response);
+                    this.refreshTableData();
                 })
                 .catch((error) => {
                     console.error(error);
                 });
         },
+        refreshTableData() {
+        axios.get(`http://localhost:8090/api/blob/listFiles/${this.userName}`)
+            .then(response => {
+                this.blobFiles = response.data;
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        },
         handleFileUpload(event) {
-            const file = event.target.files[0];
+            event.preventDefault();
+            const files = event.dataTransfer.files;
             let formData = new FormData();
-            formData.append('file', file);
+
+            for (let i = 0; i < files.length; i++) {
+                formData.append('file', files[i]);
+            }
+
             axios.post(`http://localhost:8090/api/blob/sendFile/${this.userName}`, formData, {
                 headers: {
                 'Content-Type': 'multipart/form-data'
@@ -62,21 +83,12 @@ export default {
             })
             .then((response) => {
                 console.log(response);
+                this.refreshTableData();
             })
             .catch((error) => {
                 console.error(error);
             });
         },
-        handleDrop(e) {
-            e.preventDefault();
-            let files = e.dataTransfer.files;
-            if (files.length > 0) {
-                let dt = new DataTransfer();
-                dt.items.add(files[0]);
-                this.$refs.fileInput.files = dt.files;
-                this.handleFileUpload({ target: this.$refs.fileInput });
-            }
-        }, 
         downloadFile(fileName) {
             console.log(fileName);
             axios.get(`http://localhost:8090/api/blob/downloadFile/${this.userName}/${fileName}`, {
@@ -103,5 +115,17 @@ table {
     width: 50%;
 }
 .table_transparent { --bs-table-bg: transparent !important; }
+#dropzone {
+    width: 50%;
+    border: 2px dashed #000000;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    padding: 25px;
+    position: absolute;
+    text-align: center;
+    font: 21pt bold arial;
+    color: #050505;
+
+}
 </style>
 ```
