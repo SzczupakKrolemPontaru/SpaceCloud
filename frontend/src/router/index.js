@@ -31,22 +31,25 @@ function isLoggedIn() {
   return !!localStorage.getItem('loggedInUser');
 }
 
+// strażnik nawigacji 
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!isLoggedIn()) {
       next('/');
     } else {
       if (to.params.uName === localStorage.getItem('loggedInUser')) {
-        next(); 
+        next();
       } else {
         next('/');
       }
     }
   } else {
-    next();
+    if (localStorage.getItem('loggedInUser')) {
+      next('/container/' + localStorage.getItem('loggedInUser'));
+    } else {
+      next();
+    }
   }
 });
-
-
 
 export default router
