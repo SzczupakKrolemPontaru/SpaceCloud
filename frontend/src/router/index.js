@@ -17,7 +17,8 @@ const routes = [
    {
     path: '/container/:uName',
     name: 'container',
-    component: ContainerView
+    component: ContainerView,
+    meta: { requiresAuth: true }
    }
 ]
 
@@ -25,5 +26,27 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
+
+function isLoggedIn() {
+  return !!localStorage.getItem('loggedInUser');
+}
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (!isLoggedIn()) {
+      next('/');
+    } else {
+      if (to.params.uName === localStorage.getItem('loggedInUser')) {
+        next(); 
+      } else {
+        next('/');
+      }
+    }
+  } else {
+    next();
+  }
+});
+
+
 
 export default router

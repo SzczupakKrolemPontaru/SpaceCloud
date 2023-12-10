@@ -1,13 +1,7 @@
 <template>
     <div>
+        <h1>Personal Cloud Storage of {{ userName }}</h1>
         <table class = "table table-bordered table-hover table_transparent">
-            <thead>
-                <tr>
-                    <th>File Name</th>
-                    <th>Download</th>
-                    <th>Delete</th>
-                </tr>
-            </thead>
             <tbody>
                 <tr v-for="(file, index) in blobFiles" :key="index">
                     <td>{{ file }}</td>
@@ -22,8 +16,9 @@
             @dragenter.prevent
             @drop="handleFileUpload"
         >
-            Drop files here
+            Przenies pliki tutaj
         </div>
+        <button id="logoutBTN" @click="logout" class="btn btn-outline-success">Logout</button>
     </div>
 </template>
 
@@ -80,8 +75,8 @@ export default {
                     }
                 })
                 .then((response) => {
-                    console.log(response);
                     this.refreshTableData();
+                    return response.data;
                 })
                 .catch((error) => {
                     console.error(error);
@@ -89,7 +84,6 @@ export default {
             }
         },
         downloadFile(fileName) {
-            console.log(fileName);
             axios.get(`http://localhost:8090/api/blob/downloadFile/${this.userName}/${fileName}`, {
                 responseType: "blob",
             }).then((response) => {
@@ -98,6 +92,10 @@ export default {
             .catch((error) => {
                 console.error(error);
             });
+        }, 
+        logout() {
+            localStorage.removeItem('loggedInUser');
+            this.$router.push({ name: "login" });
         }
     }  
 
@@ -105,26 +103,41 @@ export default {
 </script>
 
 <style scoped>
+h1 {
+    text-align: center;
+}
 th {
     text-align: left;
 }
 table {
+    border: 2px #000000;
+    margin-top: 5%;
+    margin-left: auto;
+    margin-right: auto;
     text-align: center;
     border-collapse: collapse;
     width: 50%;
 }
 .table_transparent { --bs-table-bg: transparent !important; }
 #dropzone {
+    margin-left: auto;
+    margin-right: auto;
     width: 50%;
     border: 2px dashed #000000;
-    -webkit-border-radius: 5px;
-    border-radius: 5px;
-    padding: 25px;
-    position: absolute;
+    padding: 4%;
     text-align: center;
-    font: 21pt bold arial;
+    font: bold arial;
     color: #050505;
 
+}
+#logoutBTN {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    display: block;
+    margin-top: 5%;
+    width: 10%;
+    font-weight: bold;
 }
 </style>
 ```

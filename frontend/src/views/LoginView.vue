@@ -59,6 +59,7 @@ export default {
         .then((response) => {
           const userData = response.data[0];
           if (this.password === userData.userPassword) {
+            localStorage.setItem('loggedInUser', userName);
             this.$router.push({
               name: "container",
               params: { uName: userName },
