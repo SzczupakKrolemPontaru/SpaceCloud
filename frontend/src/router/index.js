@@ -17,8 +17,7 @@ const routes = [
    {
     path: '/container/:uName',
     name: 'container',
-    component: ContainerView,
-    meta: { requiresAuth: true }
+    component: ContainerView
    }
 ]
 
@@ -31,7 +30,7 @@ function isLoggedIn() {
   return !!localStorage.getItem('loggedInUser');
 }
 
-// strażnik nawigacji 
+// strażnik nawigacji
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!isLoggedIn()) {

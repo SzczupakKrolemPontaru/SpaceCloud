@@ -75,7 +75,7 @@ export default {
           userPassword: this.password,
         };
         axios
-          .post("http://localhost:8090/api/db/addUser", formData)
+          .post("http://localhost:3000/users/register", formData)
           .then((response) => {
             console.log(response.data);
           })

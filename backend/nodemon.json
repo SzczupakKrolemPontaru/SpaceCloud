@@ -1,0 +1,6 @@
+{
+    "env": {
+        "AZURE_STORAGE_CONNECTION_STRING": "'DefaultEndpointsProtocol=https;AccountName=spcblobcontainer;AccountKey=+l0NTnsjyFp2BOLiTtPhr/yza0ZUQAauCL5KrMfVOu1K27b7K6y4T8UujLjiath1Or63ccRcTE2m+AStaoBlnQ==;EndpointSuffix=core.windows.net'",
+        "JWT_KEY": "secret"
+    }
+}

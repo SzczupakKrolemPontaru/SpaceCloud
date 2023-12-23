@@ -53,16 +53,20 @@ export default {
         this.showAlert = true;
         return;
       }
-      const userName = this.uName;
+      const formData = {
+        userName: this.uName,
+        userPassword: this.password,
+      };
       axios
-        .get(`http://localhost:8090/api/db/getUser/${userName}`)
+        .post(`http://localhost:3000/users/login`, formData)
         .then((response) => {
-          const userData = response.data[0];
-          if (this.password === userData.userPassword) {
-            localStorage.setItem('loggedInUser', userName);
+          console.log(response);
+          const userData = response.data;
+          if (userData.message === "Auth successful") {
+            localStorage.setItem("token", userData.token);
             this.$router.push({
               name: "container",
-              params: { uName: userName },
+              params: { uName: this.uName },
             });
           } else {
             this.showAlert = true;

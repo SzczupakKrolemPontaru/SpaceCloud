@@ -1,4 +1,8 @@
-const blobServiceClient = require("./bsConfig");
+const { DefaultAzureCredential } = require("@azure/identity");
+const { BlobServiceClient } = require("@azure/storage-blob");
+const blobServiceClient = BlobServiceClient.fromConnectionString(
+  'DefaultEndpointsProtocol=https;AccountName=spcblobcontainer;AccountKey=+l0NTnsjyFp2BOLiTtPhr/yza0ZUQAauCL5KrMfVOu1K27b7K6y4T8UujLjiath1Or63ccRcTE2m+AStaoBlnQ==;EndpointSuffix=core.windows.net'
+);
 
 async function createContainerIfNotExists(userName) {
   const containerClient = blobServiceClient.getContainerClient(userName);
@@ -35,11 +39,10 @@ async function downloadFile(userName, fileName) {
   return response.readableStreamBody;
 }
 
-
 module.exports = {
   createContainerIfNotExists: createContainerIfNotExists,
   uploadFile: uploadFile,
   listFiles: listFiles,
   deleteFile: deleteFile,
-  downloadFile: downloadFile
+  downloadFile: downloadFile,
 };
