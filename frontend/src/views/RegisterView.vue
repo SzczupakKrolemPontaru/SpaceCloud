@@ -21,6 +21,7 @@
           class="form-control"
           placeholder="Password"
           v-model="password"
+          @input="checkPasswords"
         />
       </div>
       <div>
@@ -31,6 +32,7 @@
           class="form-control"
           placeholder="Confirm Password"
           v-model="passwordConfirm"
+          @input="checkPasswords"
         />
         <div class="alert alert-danger" role="alert" v-if="showError">
           Passwords do not match
@@ -65,25 +67,28 @@ export default {
     },
     submitFormRegister() {
       event.preventDefault();
-      if (this.password.valueOf() !== this.passwordConfirm.valueOf()) {
-        this.showError = true;
-        alert("Passwords did not match, user was not created!");
-        return;
-      } else {
-        const formData = {
-          userName: this.uName,
-          userPassword: this.password,
-        };
-        axios
-          .post("http://localhost:3000/users/register", formData)
-          .then((response) => {
-            console.log(response.data);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-        this.$router.push({ name: "login", query: { userCreated: true } });
-      }
+      const formData = {
+        userName: this.uName,
+        userPassword: this.password,
+      };
+      axios
+        .post("http://localhost:3000/users/register", formData)
+        .then((response) => {
+          console.log(response.data);
+          this.$router.push({ name: "login", query: { userCreated: true } });
+        })
+        .catch((err) => {
+          if (err.response.status == 409) {
+            alert("Username already exists, please try again!");
+            this.uName = "";
+            (this.password = ""), (this.passwordConfirm = "");
+          } else if (err.response.status == 500) {
+            alert("Server error, please try again later!");
+          } else {
+            alert("Unknown error, please try again later!");
+          }
+          console.log(err);
+        });
     },
     newUserCreated() {
       console.log(this.$route.query.userCreated);
@@ -91,14 +96,20 @@ export default {
         alert("User was successfully created!");
       }
     },
-  },
-  watch: {
-    passwordConfirm() {
-      if (this.password.valueOf() !== this.passwordConfirm.valueOf()) {
+    checkPasswords() {
+      if (
+        this.password.valueOf() !== this.passwordConfirm.valueOf() &&
+        this.passwordConfirm.length > 0
+      ) {
         this.showError = true;
       } else {
         this.showError = false;
       }
+    },
+  },
+  watch: {
+    passwordConfirm() {
+      this.checkPasswords();
     },
   },
 };

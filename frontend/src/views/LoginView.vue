@@ -60,13 +60,12 @@ export default {
       axios
         .post(`http://localhost:3000/users/login`, formData)
         .then((response) => {
-          console.log(response);
           const userData = response.data;
           if (userData.message === "Auth successful") {
-            localStorage.setItem("token", userData.token);
+            this.$store.commit("setUserName", formData.userName);
+            this.$store.commit("setToken", userData.token);
             this.$router.push({
               name: "container",
-              params: { uName: this.uName },
             });
           } else {
             this.showAlert = true;

@@ -37,7 +37,7 @@ exports.user_register = async (req, res) => {
       await blob.createContainerIfNotExists(containerName);
 
       await t.commit();
-      return res.json(newUser);
+      return res.json(newUser.userName);
     } catch (createError) {
       await t.rollback();
       return res.status(500).json(createError);

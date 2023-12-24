@@ -47,17 +47,13 @@ export default {
   data() {
     return {
       blobFiles: [],
-      userName: "",
-      token: "",
     };
   },
   mounted() {
-    this.userName = this.$route.params.uName;
-    this.token = localStorage.getItem("token");
     axios
-      .get(`http://localhost:3000/blobs/${this.userName}`, {
+      .get(`http://localhost:3000/blobs/${this.$store.getters.getUserName}`, {
         headers: {
-          Authorization: `Bearer ${this.token}`,
+          Authorization: `Bearer ${this.$store.getters.getUserToken}`,
         },
       })
       .then((response) => {
@@ -71,11 +67,14 @@ export default {
   methods: {
     deleteFile(fileName) {
       axios
-        .delete(`http://localhost:3000/blobs/${this.userName}/${fileName}`, {
-          headers: {
-            Authorization: `Bearer ${this.token}`,
-          },
-        })
+        .delete(
+          `http://localhost:3000/blobs/${this.$store.getters.getUserName}/${fileName}`,
+          {
+            headers: {
+              Authorization: `Bearer ${this.$store.getters.getUserToken}`,
+            },
+          }
+        )
         .then((response) => {
           console.log(response);
           this.refreshTableData();
@@ -86,9 +85,9 @@ export default {
     },
     refreshTableData() {
       axios
-        .get(`http://localhost:3000/blobs/${this.userName}`, {
+        .get(`http://localhost:3000/blobs/${this.$store.getters.getUserName}`, {
           headers: {
-            Authorization: `Bearer ${this.token}`,
+            Authorization: `Bearer ${this.$store.getters.getUserToken}`,
           },
         })
         .then((response) => {
@@ -107,9 +106,9 @@ export default {
         let formData = new FormData();
         formData.append("file", file);
         axios
-          .post(`http://localhost:3000/blobs/${this.userName}`, formData, {
+          .post(`http://localhost:3000/blobs/${this.$store.getters.getUserName}`, formData, {
             headers: {
-              Authorization: `Bearer ${this.token}`,
+              Authorization: `Bearer ${this.$store.getters.getUserToken}`,
               "Content-Type": "multipart/form-data",
             },
           })
@@ -124,9 +123,9 @@ export default {
     },
     downloadFile(fileName) {
       axios
-        .get(`http://localhost:3000/blobs/${this.userName}/${fileName}`, {
+        .get(`http://localhost:3000/blobs/${this.$store.getters.getUserName}/${fileName}`, {
           headers: {
-            Authorization: `Bearer ${this.token}`,
+            Authorization: `Bearer ${this.$store.getters.getUserToken}`,
             "Content-Type": "multipart/form-data",
           },
           responseType: "blob",
@@ -139,7 +138,8 @@ export default {
         });
     },
     logout() {
-      localStorage.removeItem("token");
+      this.$store.dispatch("clearToken");
+      this.$store.dispatch("clearUserName");
       this.$router.push({ name: "login" });
     },
   },
