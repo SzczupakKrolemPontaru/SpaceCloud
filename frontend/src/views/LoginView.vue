@@ -61,9 +61,11 @@ export default {
         .post(`http://localhost:3000/users/login`, formData)
         .then((response) => {
           const userData = response.data;
+          console.log(userData);
           if (userData.message === "Auth successful") {
             this.$store.commit("setUserName", formData.userName);
-            this.$store.commit("setToken", userData.token);
+            this.$store.commit("setToken", userData.accessToken);
+            //this.$cookies.set("jwt", userData.accessToken, { expires: 1 });
             this.$router.push({
               name: "container",
             });

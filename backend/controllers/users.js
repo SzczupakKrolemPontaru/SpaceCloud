@@ -63,17 +63,31 @@ exports.user_login = async (req, res) => {
         });
       }
       if (result) {
-        const token = jwt.sign(
+        const accessToken = jwt.sign(
           {
             userName: user.userName,
             userId: user.id,
           },
           process.env.ACCESS_TOKEN,
-          { expiresIn: "1h" }
+          { expiresIn: "30s" }
         );
+        const refreshToken = jwt.sign(
+          {
+            userName: user.userName,
+            userId: user.id,
+          },
+          process.env.REFRESH_TOKEN,
+          { expiresIn: "1d" }
+        );
+        user.refreshToken = refreshToken;
+        user.save();
+        res.cookie("jwt", refreshToken, {
+          httpOnly: true,
+          maxAge: 24 * 60 * 60 * 1000,
+        });
         return res.status(200).json({
           message: "Auth successful",
-          token,
+          accessToken,
         });
       }
       return res.status(401).json({
@@ -82,6 +96,60 @@ exports.user_login = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+    return res.status(500).json(error);
+  }
+};
+
+exports.handleRefereshToken = async (req, res) => {
+  const cookies = req.cookies;
+  if (!cookies?.jwt) return res.status(401).json({ error: "Auth failed" });
+  const refreshToken = cookies.jwt;
+  try {
+    const user = await User.findOne({ where: { refreshToken: refreshToken } });
+    if (!user) {
+      return res.status(403).json({
+        error: "Invalid login",
+      });
+    }
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN, (err, data) => {
+      if (err || user.userName !== data.userName) {
+        return res.status(403).json({
+          error: "Auth failed",
+        });
+      } else {
+        const accessToken = jwt.sign(
+          {
+            userName: data.userName,
+            userId: data.id,
+          },
+          process.env.ACCESS_TOKEN,
+          { expiresIn: "30s" }
+        );
+        res.json({ accessToken });
+      }
+    });
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
+exports.user_logout = async (req, res) => {
+  const cookies = req.cookies;
+  if (!cookies?.jwt) {
+    return res.status(204).end();
+  }
+  const refreshToken = cookies.jwt;
+  try {
+    const user = await User.findOne({ where: { refreshToken: refreshToken } });
+    if (!user) {
+      res.clearCookie("jwt", { httpOnly: true, maxAge: 0 });
+      return res.status(204).end();
+    }
+    user.refreshToken = null;
+    await user.save();
+    res.clearCookie("jwt", { httpOnly: true, maxAge: 0 });
+    return res.status(204).end();
+  } catch (error) {
     return res.status(500).json(error);
   }
 };

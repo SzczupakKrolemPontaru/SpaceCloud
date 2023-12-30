@@ -38,11 +38,14 @@ module.exports = (sequelize, DataTypes) => {
           }
         },
       },
+      refreshToken: {
+        type: DataTypes.STRING
+      }
     },
     {
       sequelize,
       modelName: "User",
-      tableName: "usersORM"
+      tableName: "users"
     }
   );
   return User;

@@ -6,7 +6,7 @@ module.exports = (req, res, next) => {
   }
   jwt.verify(token, process.env.ACCESS_TOKEN, (err, data) => {
     if (err) {
-      return res.status(401).json({ error: "Auth failed" });
+      return res.status(403).json({ error: "Auth failed" });
     }
     req.userData = data;
     next();

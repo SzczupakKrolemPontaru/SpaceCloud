@@ -100,18 +100,23 @@ export default {
     },
     handleFileUpload(event) {
       event.preventDefault();
+
       const files = event.dataTransfer.files;
       for (let i = 0; i < files.length; i++) {
         let file = files[i];
         let formData = new FormData();
         formData.append("file", file);
         axios
-          .post(`http://localhost:3000/blobs/${this.$store.getters.getUserName}`, formData, {
-            headers: {
-              Authorization: `Bearer ${this.$store.getters.getUserToken}`,
-              "Content-Type": "multipart/form-data",
-            },
-          })
+          .post(
+            `http://localhost:3000/blobs/${this.$store.getters.getUserName}`,
+            formData,
+            {
+              headers: {
+                Authorization: `Bearer ${this.$store.getters.getUserToken}`,
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          )
           .then((response) => {
             this.refreshTableData();
             return response.data;
@@ -122,18 +127,35 @@ export default {
       }
     },
     downloadFile(fileName) {
-      axios
-        .get(`http://localhost:3000/blobs/${this.$store.getters.getUserName}/${fileName}`, {
-          headers: {
-            Authorization: `Bearer ${this.$store.getters.getUserToken}`,
-            "Content-Type": "multipart/form-data",
-          },
-          responseType: "blob",
-        })
-        .then((response) => {
-          saveAs(new Blob([response.data]), fileName);
-        })
-        .catch((error) => {
+        this.refreshToken();
+        axios
+          .get(
+            `http://localhost:3000/blobs/${this.$store.getters.getUserName}/${fileName}`,
+            {
+              headers: {
+                Authorization: `Bearer ${this.$store.getters.getUserToken}`,
+                "Content-Type": "multipart/form-data",
+              },
+              responseType: "blob",
+            }
+          )
+          .then((response) => {
+            saveAs(new Blob([response.data]), fileName);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+    },
+    refreshToken() {
+      axios.get(
+          "http://localhost:3000/users/",
+          {
+            withCredentials: true,
+          }
+        ).then((response) => {
+          console.log(response);
+          this.$store.dispatch("setToken", response.data.accessToken);
+        }).catch((error) => {
           console.error(error);
         });
     },
@@ -141,6 +163,8 @@ export default {
       this.$store.dispatch("clearToken");
       this.$store.dispatch("clearUserName");
       this.$router.push({ name: "login" });
+      this.$cookie.remove("jwt");
+      axios.delete("http://localhost:3000/users/logout");
     },
   },
 };
