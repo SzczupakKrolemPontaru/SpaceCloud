@@ -58,76 +58,82 @@ export default {
       })
       .then((response) => {
         this.blobFiles = response.data;
-        console.log(this.blobFiles);
       })
       .catch((error) => {
-        console.error(error);
+       console.log(error);
       });
   },
   methods: {
     deleteFile(fileName) {
-      axios
-        .delete(
-          `http://localhost:3000/blobs/${this.$store.getters.getUserName}/${fileName}`,
-          {
-            headers: {
-              Authorization: `Bearer ${this.$store.getters.getUserToken}`,
-            },
-          }
-        )
-        .then((response) => {
-          console.log(response);
-          this.refreshTableData();
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    },
-    refreshTableData() {
-      axios
-        .get(`http://localhost:3000/blobs/${this.$store.getters.getUserName}`, {
-          headers: {
-            Authorization: `Bearer ${this.$store.getters.getUserToken}`,
-          },
-        })
-        .then((response) => {
-          this.blobFiles = response.data;
-          console.log(this.blobFiles);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    },
-    handleFileUpload(event) {
-      event.preventDefault();
-
-      const files = event.dataTransfer.files;
-      for (let i = 0; i < files.length; i++) {
-        let file = files[i];
-        let formData = new FormData();
-        formData.append("file", file);
+      this.refreshToken().then(() => {
         axios
-          .post(
-            `http://localhost:3000/blobs/${this.$store.getters.getUserName}`,
-            formData,
+          .delete(
+            `http://localhost:3000/blobs/${this.$store.getters.getUserName}/${fileName}`,
             {
               headers: {
                 Authorization: `Bearer ${this.$store.getters.getUserToken}`,
-                "Content-Type": "multipart/form-data",
               },
             }
           )
           .then((response) => {
+            console.log(response);
             this.refreshTableData();
-            return response.data;
           })
           .catch((error) => {
             console.error(error);
           });
-      }
+      });
+    },
+    refreshTableData() {
+      this.refreshToken().then(() => {
+        axios
+          .get(
+            `http://localhost:3000/blobs/${this.$store.getters.getUserName}`,
+            {
+              headers: {
+                Authorization: `Bearer ${this.$store.getters.getUserToken}`,
+              },
+            }
+          )
+          .then((response) => {
+            this.blobFiles = response.data;
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      });
+    },
+    handleFileUpload(event) {
+      this.refreshToken().then(() => {
+        event.preventDefault();
+        const files = event.dataTransfer.files;
+        for (let i = 0; i < files.length; i++) {
+          let file = files[i];
+          let formData = new FormData();
+          formData.append("file", file);
+          axios
+            .post(
+              `http://localhost:3000/blobs/${this.$store.getters.getUserName}`,
+              formData,
+              {
+                headers: {
+                  Authorization: `Bearer ${this.$store.getters.getUserToken}`,
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            )
+            .then((response) => {
+              this.refreshTableData();
+              return response.data;
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+        }
+      });
     },
     downloadFile(fileName) {
-        this.refreshToken();
+      this.refreshToken().then(() => {
         axios
           .get(
             `http://localhost:3000/blobs/${this.$store.getters.getUserName}/${fileName}`,
@@ -145,17 +151,17 @@ export default {
           .catch((error) => {
             console.error(error);
           });
+      });
     },
-    refreshToken() {
-      axios.get(
-          "http://localhost:3000/users/",
-          {
-            withCredentials: true,
-          }
-        ).then((response) => {
-          console.log(response);
+    async refreshToken() {
+      axios
+        .get("http://localhost:3000/users/", {
+          withCredentials: true,
+        })
+        .then((response) => {
           this.$store.dispatch("setToken", response.data.accessToken);
-        }).catch((error) => {
+        })
+        .catch((error) => {
           console.error(error);
         });
     },
@@ -163,7 +169,6 @@ export default {
       this.$store.dispatch("clearToken");
       this.$store.dispatch("clearUserName");
       this.$router.push({ name: "login" });
-      this.$cookie.remove("jwt");
       axios.delete("http://localhost:3000/users/logout");
     },
   },

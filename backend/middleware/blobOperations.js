@@ -1,22 +1,22 @@
-const { DefaultAzureCredential } = require("@azure/identity");
 const { BlobServiceClient } = require("@azure/storage-blob");
+const config = require("../config/config.json");
 const blobServiceClient = BlobServiceClient.fromConnectionString(
-  'DefaultEndpointsProtocol=https;AccountName=spcblobcontainer;AccountKey=+l0NTnsjyFp2BOLiTtPhr/yza0ZUQAauCL5KrMfVOu1K27b7K6y4T8UujLjiath1Or63ccRcTE2m+AStaoBlnQ==;EndpointSuffix=core.windows.net'
+  config.development.azureStorage.connectionString
 );
 
-async function createContainerIfNotExists(userName) {
+exports.createContainerIfNotExists = async(userName) => {
   const containerClient = blobServiceClient.getContainerClient(userName);
   const exists = await containerClient.exists();
   if (!exists) {
     await containerClient.create();
   }
 }
-async function uploadFile(userName, file, fileName) {
+exports.uploadFile = async(userName, file, fileName) => {
   const containerClient = blobServiceClient.getContainerClient(userName);
   const blockBlobClient = containerClient.getBlockBlobClient(fileName);
   await blockBlobClient.upload(file.buffer, file.buffer.length);
 }
-async function listFiles(userName) {
+exports.listFiles = async(userName) => {
   const containerClient = blobServiceClient.getContainerClient(userName);
   const files = [];
   for await (const blob of containerClient.listBlobsFlat()) {
@@ -25,24 +25,16 @@ async function listFiles(userName) {
   }
   return files;
 }
-async function deleteFile(userName, file) {
+exports.deleteFile = async(userName, fileName) => {
   const containerClient = blobServiceClient.getContainerClient(userName);
-  const blockBlobClient = containerClient.getBlockBlobClient(file);
+  const blockBlobClient = containerClient.getBlockBlobClient(fileName);
   await blockBlobClient.delete();
 }
 
-async function downloadFile(userName, fileName) {
+exports.downloadFile = async(userName, fileName) => {
   const containerClient = blobServiceClient.getContainerClient(userName);
   const blockBlobClient = containerClient.getBlockBlobClient(fileName);
 
   const response = await blockBlobClient.download();
   return response.readableStreamBody;
 }
-
-module.exports = {
-  createContainerIfNotExists: createContainerIfNotExists,
-  uploadFile: uploadFile,
-  listFiles: listFiles,
-  deleteFile: deleteFile,
-  downloadFile: downloadFile,
-};

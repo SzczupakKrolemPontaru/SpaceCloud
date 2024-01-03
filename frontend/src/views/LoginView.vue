@@ -58,14 +58,14 @@ export default {
         userPassword: this.password,
       };
       axios
-        .post(`http://localhost:3000/users/login`, formData)
+        .post(`http://localhost:3000/users/login`, formData, {
+          withCredentials: true,
+        })
         .then((response) => {
           const userData = response.data;
-          console.log(userData);
           if (userData.message === "Auth successful") {
             this.$store.commit("setUserName", formData.userName);
             this.$store.commit("setToken", userData.accessToken);
-            //this.$cookies.set("jwt", userData.accessToken, { expires: 1 });
             this.$router.push({
               name: "container",
             });
@@ -75,7 +75,7 @@ export default {
         })
         .catch((error) => {
           alert("User does not exist");
-          console.error(error);
+          console.log(error);
         });
     },
   },

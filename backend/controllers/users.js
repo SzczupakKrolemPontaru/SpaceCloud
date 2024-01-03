@@ -102,6 +102,7 @@ exports.user_login = async (req, res) => {
 
 exports.handleRefereshToken = async (req, res) => {
   const cookies = req.cookies;
+  console.log(cookies);
   if (!cookies?.jwt) return res.status(401).json({ error: "Auth failed" });
   const refreshToken = cookies.jwt;
   try {

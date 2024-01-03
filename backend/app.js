@@ -15,7 +15,10 @@ const blobsRoutes = require("./routes/blobs");
 app.use(morgan("dev"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({
+  credentials: true,
+  origin: "http://localhost:8080"
+}));
 app.use(cookieParser());
 
 app.use("/users", usersRoutes);

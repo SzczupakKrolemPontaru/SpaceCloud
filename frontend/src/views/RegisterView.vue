@@ -87,7 +87,6 @@ export default {
           } else {
             alert("Unknown error, please try again later!");
           }
-          console.log(err);
         });
     },
     newUserCreated() {
