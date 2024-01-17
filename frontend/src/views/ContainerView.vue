@@ -4,10 +4,11 @@
     <table class="table table-bordered table-hover table_transparent">
       <tbody>
         <tr v-for="(file, index) in blobFiles" :key="index">
-          <td>{{ file }}</td>
+          <td><b>{{ file.name }}</b></td>
+          <td>{{ formatDate(file.versionId) }}</td>
           <td>
             <button
-              @click="downloadFile(file)"
+              @click="downloadFile(file.name)"
               type="button"
               class="btn btn-success"
             >
@@ -16,12 +17,24 @@
           </td>
           <td>
             <button
-              @click="deleteFile(file)"
+              @click="deleteFile(file.name)"
               type="button"
               class="btn btn-danger"
             >
               Delete
             </button>
+          </td>
+          <td>
+            <select v-model="selectedVersion">
+              <option disabled value="">Select version</option>
+              <option 
+                v-for="(version, index) in versions.filter(v => v.name == file.name)" 
+                :key="index" 
+                :value="version.versionId"
+              >
+                {{ formatDate(version.versionId) }}
+              </option>
+            </select>
           </td>
         </tr>
       </tbody>
@@ -43,10 +56,14 @@
 <script>
 import axios from "axios";
 import saveAs from "file-saver";
+import moment from 'moment';
 export default {
   data() {
     return {
       blobFiles: [],
+      versions: [],
+      selectedVersion: "",
+      moment: moment,
     };
   },
   mounted() {
@@ -57,11 +74,28 @@ export default {
         },
       })
       .then((response) => {
+        console.log(response);
         this.blobFiles = response.data;
       })
       .catch((error) => {
        console.log(error);
       });
+      axios
+        .get(
+          `http://localhost:3000/blobs/${this.$store.getters.getUserName}/xxx/versions`, 
+          {
+            headers: {
+              Authorization: `Bearer ${this.$store.getters.getUserToken}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        )
+        .then((response) => {
+          this.versions = response.data;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
   },
   methods: {
     deleteFile(fileName) {
@@ -171,6 +205,31 @@ export default {
       this.$router.push({ name: "login" });
       axios.delete("http://localhost:3000/users/logout");
     },
+    formatDate(dateString) {
+      const date = moment(dateString);
+      return date.format('YYYY-MM-DD HH:mm:ss');
+    },
+    getFileVersions(fileName){
+      this.refreshToken().then(() => {
+        axios
+          .get(
+            `http://localhost:3000/blobs/${this.$store.getters.getUserName}/${fileName}/versions`,
+            {
+              headers: {
+                Authorization: `Bearer ${this.$store.getters.getUserToken}`,
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          )
+          .then((response) => {
+            console.log(response);
+            this.versions = response.data;
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      });
+    }
   },
 };
 </script>
@@ -189,7 +248,7 @@ table {
   margin-right: auto;
   text-align: center;
   border-collapse: collapse;
-  width: 50%;
+  width: 80%;
 }
 .table_transparent {
   --bs-table-bg: transparent !important;

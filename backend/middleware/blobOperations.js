@@ -1,5 +1,6 @@
 const { BlobServiceClient } = require("@azure/storage-blob");
 const config = require("../config/config.json");
+const { verify } = require("jsonwebtoken");
 const blobServiceClient = BlobServiceClient.fromConnectionString(
   config.development.azureStorage.connectionString
 );
@@ -21,7 +22,7 @@ exports.listFiles = async(userName) => {
   const files = [];
   for await (const blob of containerClient.listBlobsFlat()) {
     const tempBlockBlobClient = containerClient.getBlockBlobClient(blob.name);
-    files.push(blob.name);
+    files.push(blob);
   }
   return files;
 }
@@ -34,7 +35,17 @@ exports.deleteFile = async(userName, fileName) => {
 exports.downloadFile = async(userName, fileName) => {
   const containerClient = blobServiceClient.getContainerClient(userName);
   const blockBlobClient = containerClient.getBlockBlobClient(fileName);
-
   const response = await blockBlobClient.download();
   return response.readableStreamBody;
 }
+
+exports.getFileVersions = async(userName, fileName) => {
+  const containerClient = blobServiceClient.getContainerClient(userName);
+  const versions = [];
+  for await (const blob of containerClient.listBlobsFlat({includeVersions: true})) {
+      const tempBlockBlobClient = containerClient.getBlockBlobClient(blob.name);
+      versions.push({name: blob.name, url: tempBlockBlobClient.url, versionId: blob.versionId});
+  }
+  return versions;
+}
+

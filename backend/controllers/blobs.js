@@ -33,10 +33,11 @@ exports.download_file = async (req, res) => {
     .then((result) => {
       LogBook.create({
         username: req.params.userName,
-        operation: "download",
+        operation: 'download',
         timestamp: new Date(),
       });
-      res.status(200).json(result);
+      res.status(200);
+      result.pipe(res);
     })
     .catch((error) => {
       res.status(500).json(error);
@@ -58,5 +59,16 @@ exports.upload_file = async (req, res) => {
         timestamp: new Date(),
       });
       res.status(201).json(result);
+    });
+};
+
+exports.get_file_versions = async (req, res) => {
+  bloboperations
+    .getFileVersions(req.params.userName, req.params.fileName)
+    .then((result) => {
+      res.status(200).json(result);
+    })
+    .catch((error) => {
+      res.status(500).json(error);
     });
 };

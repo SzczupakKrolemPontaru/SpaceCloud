@@ -93,6 +93,7 @@ exports.user_login = async (req, res) => {
           operation: 'login',
           timestamp: new Date()
         });
+        
         user.save();
         res.cookie("jwt", refreshToken, {
           httpOnly: true,
