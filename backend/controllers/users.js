@@ -1,5 +1,6 @@
 const blob = require("../middleware/blobOperations");
 const bcrypt = require("bcrypt");
+const { LogBook } = require('../models');
 const { sequelize, User } = require("../models");
 const jwt = require("jsonwebtoken");
 
@@ -33,6 +34,12 @@ exports.user_register = async (req, res) => {
         { transaction: t }
       );
 
+      await LogBook.create({
+        username: userName,
+        operation: 'register',
+        timestamp: new Date()
+      }, { transaction: t });
+      
       const containerName = newUser.userName.toLowerCase();
       await blob.createContainerIfNotExists(containerName);
 
@@ -80,6 +87,12 @@ exports.user_login = async (req, res) => {
           { expiresIn: "1d" }
         );
         user.refreshToken = refreshToken;
+
+        LogBook.create({
+          username: userName,
+          operation: 'login',
+          timestamp: new Date()
+        });
         user.save();
         res.cookie("jwt", refreshToken, {
           httpOnly: true,
