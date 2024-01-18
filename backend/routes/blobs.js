@@ -17,8 +17,6 @@ router.get("/:userName", checkAuth, blobsController.blobs_get_all);
 
 router.delete("/:userName/:fileName", checkAuth, blobsController.delete_file);
 
-router.get("/:userName/:fileName", checkAuth, blobsController.download_file);
-
-router.get("/:userName/:fileName/versions", checkAuth, blobsController.get_file_versions);
+router.get("/:userName/:fileName/:versionId", checkAuth, blobsController.download_file);
 
 module.exports = router;

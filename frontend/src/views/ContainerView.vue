@@ -75,19 +75,15 @@ export default {
       })
       .then((response) => {
         this.blobFiles = response.data;
+            this.blobFiles = this.blobFiles.map((file) => ({
+          ...file,
+          selectedVersion: file.versionId,
+        }));
         this.refreshToken();
-        console.log(this.blobFiles);
-        console.log(this.blobFiles[0].versions);
       })
       .catch((error) => {
         console.log(error);
       });
-  },
-  created() {
-    this.blobFiles = this.blobFiles.map((file) => ({
-      ...file,
-      selectedVersion: file.versionId,
-    }));
   },
   methods: {
     deleteFile(fileName) {
@@ -117,6 +113,10 @@ export default {
         })
         .then((response) => {
           this.blobFiles = response.data;
+          this.blobFiles = this.blobFiles.map((file) => ({
+          ...file,
+          selectedVersion: file.versionId,
+        }));
         })
         .catch((error) => {
           console.error(error);
@@ -152,7 +152,9 @@ export default {
     downloadFile(fileName) {
       axios
         .get(
-          `http://localhost:3000/blobs/${this.$store.getters.getUserName}/${fileName}`,
+          `http://localhost:3000/blobs/${this.$store.getters.getUserName}/${fileName}/${
+            this.blobFiles.find((file) => file.name === fileName).selectedVersion
+          }`,
           {
             headers: {
               Authorization: `Bearer ${this.$store.getters.getUserToken}`,

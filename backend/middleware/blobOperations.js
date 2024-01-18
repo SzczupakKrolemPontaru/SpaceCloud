@@ -43,20 +43,10 @@ exports.deleteFile = async(userName, fileName) => {
   await blockBlobClient.delete();
 }
 
-exports.downloadFile = async(userName, fileName) => {
+exports.downloadFile = async(userName, fileName, versionId) => {
   const containerClient = blobServiceClient.getContainerClient(userName);
-  const blockBlobClient = containerClient.getBlockBlobClient(fileName);
+  const blockBlobClient = containerClient.getBlockBlobClient(fileName).withVersion(versionId);
   const response = await blockBlobClient.download();
   return response.readableStreamBody;
-}
-
-exports.getFileVersions = async(userName, fileName) => {
-  const containerClient = blobServiceClient.getContainerClient(userName);
-  const versions = [];
-  for await (const blob of containerClient.listBlobsFlat({includeVersions: true})) {
-      const tempBlockBlobClient = containerClient.getBlockBlobClient(blob.name);
-      versions.push({name: blob.name, url: tempBlockBlobClient.url, versionId: blob.versionId});
-  }
-  return versions;
 }
 

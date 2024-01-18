@@ -29,7 +29,7 @@ exports.delete_file = async (req, res) => {
 
 exports.download_file = async (req, res) => {
   bloboperations
-    .downloadFile(req.params.userName, req.params.fileName)
+    .downloadFile(req.params.userName, req.params.fileName, req.params.versionId)
     .then((result) => {
       LogBook.create({
         username: req.params.userName,
@@ -59,16 +59,5 @@ exports.upload_file = async (req, res) => {
         timestamp: new Date(),
       });
       res.status(201).json(result);
-    });
-};
-
-exports.get_file_versions = async (req, res) => {
-  bloboperations
-    .getFileVersions(req.params.userName, req.params.fileName)
-    .then((result) => {
-      res.status(200).json(result);
-    })
-    .catch((error) => {
-      res.status(500).json(error);
     });
 };
