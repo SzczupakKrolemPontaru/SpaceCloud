@@ -39,7 +39,7 @@ exports.user_register = async (req, res) => {
         operation: 'register',
         timestamp: new Date()
       }, { transaction: t });
-      
+
       const containerName = newUser.userName.toLowerCase();
       await blob.createContainerIfNotExists(containerName);
 
@@ -93,7 +93,7 @@ exports.user_login = async (req, res) => {
           operation: 'login',
           timestamp: new Date()
         });
-        
+
         user.save();
         res.cookie("jwt", refreshToken, {
           httpOnly: true,
@@ -116,7 +116,6 @@ exports.user_login = async (req, res) => {
 
 exports.handleRefereshToken = async (req, res) => {
   const cookies = req.cookies;
-  console.log(cookies);
   if (!cookies?.jwt) return res.status(401).json({ error: "Auth failed" });
   const refreshToken = cookies.jwt;
   try {

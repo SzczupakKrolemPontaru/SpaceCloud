@@ -34,22 +34,22 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from 'axios';
 export default {
   data() {
     return {
-      uName: "",
-      password: "",
+      uName: '',
+      password: '',
       showAlert: false,
     };
   },
   methods: {
     goToRegisterView() {
-      this.$router.push({ name: "register" });
+      this.$router.push({ name: 'register' });
     },
     submitFormLogin() {
       event.preventDefault();
-      if (this.uName === "" || this.password === "") {
+      if (this.uName === '' || this.password === '') {
         this.showAlert = true;
         return;
       }
@@ -58,23 +58,21 @@ export default {
         userPassword: this.password,
       };
       axios
-        .post(`http://localhost:3000/users/login`, formData, {
-          withCredentials: true,
-        })
+        .post(`http://localhost:3000/users/login`, formData)
         .then((response) => {
           const userData = response.data;
-          if (userData.message === "Auth successful") {
-            this.$store.commit("setUserName", formData.userName);
-            this.$store.commit("setToken", userData.accessToken);
+          if (userData.message === 'Auth successful') {
+            this.$store.commit('setUserName', formData.userName);
+            this.$store.commit('setToken', userData.accessToken);
             this.$router.push({
-              name: "container",
+              name: 'container',
             });
           } else {
             this.showAlert = true;
           }
         })
         .catch((error) => {
-          alert("User does not exist");
+          alert('User does not exist');
           console.log(error);
         });
     },

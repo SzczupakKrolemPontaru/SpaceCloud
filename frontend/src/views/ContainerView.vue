@@ -4,14 +4,16 @@
     <table class="table table-bordered table-hover table_transparent">
       <tbody>
         <tr v-for="(file, index) in blobFiles" :key="index">
-          <td><b>{{ file.name }}</b></td>
+          <td>
+            <b>{{ file.name }}</b>
+          </td>
           <td>{{ formatDate(file.versionId) }}</td>
           <td>
             <button
               @click="downloadFile(file.name)"
               type="button"
               class="btn btn-success"
-              >
+            >
               Download
             </button>
           </td>
@@ -27,7 +29,11 @@
           <td>
             <select v-model="file.selectedVersion">
               <option disabled value="">Select version</option>
-              <option v-for="version in file.versions" :key="version.versionId" :value="version.versionId">
+              <option
+                v-for="version in file.versions"
+                :key="version.versionId"
+                :value="version.versionId"
+              >
                 {{ formatDate(version.versionId) }}
               </option>
             </select>
@@ -50,8 +56,8 @@
 </template>
 
 <script>
-import axios from "axios";
-import saveAs from "file-saver";
+import axios from 'axios';
+import saveAs from 'file-saver';
 import moment from 'moment';
 export default {
   data() {
@@ -69,126 +75,114 @@ export default {
       })
       .then((response) => {
         this.blobFiles = response.data;
+        this.refreshToken();
         console.log(this.blobFiles);
         console.log(this.blobFiles[0].versions);
       })
       .catch((error) => {
-       console.log(error);
+        console.log(error);
       });
   },
   created() {
-    this.blobFiles = this.blobFiles.map(file => ({
+    this.blobFiles = this.blobFiles.map((file) => ({
       ...file,
-      selectedVersion: file.versionId
+      selectedVersion: file.versionId,
     }));
   },
   methods: {
     deleteFile(fileName) {
-      this.refreshToken().then(() => {
-        axios
-          .delete(
-            `http://localhost:3000/blobs/${this.$store.getters.getUserName}/${fileName}`,
-            {
-              headers: {
-                Authorization: `Bearer ${this.$store.getters.getUserToken}`,
-              },
-            }
-          )
-          .then((response) => {
-            console.log(response);
-            this.refreshTableData();
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      });
+      axios
+        .delete(
+          `http://localhost:3000/blobs/${this.$store.getters.getUserName}/${fileName}`,
+          {
+            headers: {
+              Authorization: `Bearer ${this.$store.getters.getUserToken}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response);
+          this.refreshTableData();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     },
     refreshTableData() {
-      this.refreshToken().then(() => {
-        axios
-          .get(
-            `http://localhost:3000/blobs/${this.$store.getters.getUserName}`,
-            {
-              headers: {
-                Authorization: `Bearer ${this.$store.getters.getUserToken}`,
-              },
-            }
-          )
-          .then((response) => {
-            this.blobFiles = response.data;
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      });
+      axios
+        .get(`http://localhost:3000/blobs/${this.$store.getters.getUserName}`, {
+          headers: {
+            Authorization: `Bearer ${this.$store.getters.getUserToken}`,
+          },
+        })
+        .then((response) => {
+          this.blobFiles = response.data;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     },
     handleFileUpload(event) {
-      this.refreshToken().then(() => {
-        event.preventDefault();
-        const files = event.dataTransfer.files;
-        for (let i = 0; i < files.length; i++) {
-          let file = files[i];
-          let formData = new FormData();
-          formData.append("file", file);
-          axios
-            .post(
-              `http://localhost:3000/blobs/${this.$store.getters.getUserName}`,
-              formData,
-              {
-                headers: {
-                  Authorization: `Bearer ${this.$store.getters.getUserToken}`,
-                  "Content-Type": "multipart/form-data",
-                },
-              }
-            )
-            .then((response) => {
-              this.refreshTableData();
-              return response.data;
-            })
-            .catch((error) => {
-              console.error(error);
-            });
-        }
-      });
-    },
-    downloadFile(fileName) {
-      this.refreshToken().then(() => {
+      event.preventDefault();
+      const files = event.dataTransfer.files;
+      for (let i = 0; i < files.length; i++) {
+        let file = files[i];
+        let formData = new FormData();
+        formData.append('file', file);
         axios
-          .get(
-            `http://localhost:3000/blobs/${this.$store.getters.getUserName}/${fileName}`,
+          .post(
+            `http://localhost:3000/blobs/${this.$store.getters.getUserName}`,
+            formData,
             {
               headers: {
                 Authorization: `Bearer ${this.$store.getters.getUserToken}`,
-                "Content-Type": "multipart/form-data",
+                'Content-Type': 'multipart/form-data',
               },
-              responseType: "blob",
             }
           )
           .then((response) => {
-            saveAs(new Blob([response.data]), fileName);
+            this.refreshTableData();
+            return response.data;
           })
           .catch((error) => {
             console.error(error);
           });
-      });
+      }
+    },
+    downloadFile(fileName) {
+      axios
+        .get(
+          `http://localhost:3000/blobs/${this.$store.getters.getUserName}/${fileName}`,
+          {
+            headers: {
+              Authorization: `Bearer ${this.$store.getters.getUserToken}`,
+              'Content-Type': 'multipart/form-data',
+            },
+            responseType: 'blob',
+          }
+        )
+        .then((response) => {
+          saveAs(new Blob([response.data]), fileName);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     },
     async refreshToken() {
       axios
-        .get("http://localhost:3000/users/", {
-          withCredentials: true,
-        })
+        .get('http://localhost:3000/users/')
         .then((response) => {
-          this.$store.dispatch("setToken", response.data.accessToken);
+          this.$store.dispatch('setToken', response.data.accessToken);
         })
         .catch((error) => {
           console.error(error);
         });
     },
     logout() {
-      this.$store.dispatch("clearToken");
-      this.$store.dispatch("clearUserName");
-      this.$router.push({ name: "login" });
-      axios.delete("http://localhost:3000/users/logout");
+      this.$store.dispatch('clearToken');
+      this.$store.dispatch('clearUserName');
+      this.$router.push({ name: 'login' });
+      axios.delete('http://localhost:3000/users/logout');
     },
     formatDate(dateString) {
       const date = moment(dateString);

@@ -74,7 +74,7 @@ export default {
       axios
         .post("http://localhost:3000/users/register", formData)
         .then((response) => {
-          console.log(response.data);
+          console.log(response);
           this.$router.push({ name: "login", query: { userCreated: true } });
         })
         .catch((err) => {
@@ -90,7 +90,6 @@ export default {
         });
     },
     newUserCreated() {
-      console.log(this.$route.query.userCreated);
       if (this.$route.query.userCreated) {
         alert("User was successfully created!");
       }
