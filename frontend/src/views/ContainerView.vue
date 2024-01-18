@@ -11,7 +11,7 @@
               @click="downloadFile(file.name)"
               type="button"
               class="btn btn-success"
-            >
+              >
               Download
             </button>
           </td>
@@ -25,9 +25,10 @@
             </button>
           </td>
           <td>
-            <select v-model="selectedVersion">
+            <select v-model="file.selectedVersion">
+              <option disabled value="">Select version</option>
               <option v-for="version in file.versions" :key="version.versionId" :value="version.versionId">
-                {{ version.versionId }}
+                {{ formatDate(version.versionId) }}
               </option>
             </select>
           </td>
@@ -56,7 +57,6 @@ export default {
   data() {
     return {
       blobFiles: [],
-      selectedVersion: "",
       moment: moment,
     };
   },
@@ -75,6 +75,12 @@ export default {
       .catch((error) => {
        console.log(error);
       });
+  },
+  created() {
+    this.blobFiles = this.blobFiles.map(file => ({
+      ...file,
+      selectedVersion: file.versionId
+    }));
   },
   methods: {
     deleteFile(fileName) {
