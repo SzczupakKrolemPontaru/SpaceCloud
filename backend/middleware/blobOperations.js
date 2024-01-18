@@ -20,11 +20,22 @@ exports.uploadFile = async(userName, file, fileName) => {
 exports.listFiles = async(userName) => {
   const containerClient = blobServiceClient.getContainerClient(userName);
   const files = [];
+  const versions = [];
+  for await (const blob of containerClient.listBlobsFlat({includeVersions: true})) {
+      const tempBlockBlobClient = containerClient.getBlockBlobClient(blob.name);
+      versions.push({name: blob.name, versionId: blob.versionId});
+  }
   for await (const blob of containerClient.listBlobsFlat()) {
     const tempBlockBlobClient = containerClient.getBlockBlobClient(blob.name);
     files.push(blob);
   }
-  return files;
+
+  const filesWithVersions = files.map(file => {
+    const fileVersions = versions.filter(version => version.name === file.name);
+    return {...file, versions: fileVersions};
+  });
+
+  return filesWithVersions;
 }
 exports.deleteFile = async(userName, fileName) => {
   const containerClient = blobServiceClient.getContainerClient(userName);

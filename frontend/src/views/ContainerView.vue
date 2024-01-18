@@ -26,13 +26,8 @@
           </td>
           <td>
             <select v-model="selectedVersion">
-              <option disabled value="">Select version</option>
-              <option 
-                v-for="(version, index) in versions.filter(v => v.name == file.name)" 
-                :key="index" 
-                :value="version.versionId"
-              >
-                {{ formatDate(version.versionId) }}
+              <option v-for="version in file.versions" :key="version.versionId" :value="version.versionId">
+                {{ version.versionId }}
               </option>
             </select>
           </td>
@@ -61,7 +56,6 @@ export default {
   data() {
     return {
       blobFiles: [],
-      versions: [],
       selectedVersion: "",
       moment: moment,
     };
@@ -74,28 +68,13 @@ export default {
         },
       })
       .then((response) => {
-        console.log(response);
         this.blobFiles = response.data;
+        console.log(this.blobFiles);
+        console.log(this.blobFiles[0].versions);
       })
       .catch((error) => {
        console.log(error);
       });
-      axios
-        .get(
-          `http://localhost:3000/blobs/${this.$store.getters.getUserName}/xxx/versions`, 
-          {
-            headers: {
-              Authorization: `Bearer ${this.$store.getters.getUserToken}`,
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        )
-        .then((response) => {
-          this.versions = response.data;
-        })
-        .catch((error) => {
-          console.error(error);
-        });
   },
   methods: {
     deleteFile(fileName) {
@@ -209,27 +188,6 @@ export default {
       const date = moment(dateString);
       return date.format('YYYY-MM-DD HH:mm:ss');
     },
-    getFileVersions(fileName){
-      this.refreshToken().then(() => {
-        axios
-          .get(
-            `http://localhost:3000/blobs/${this.$store.getters.getUserName}/${fileName}/versions`,
-            {
-              headers: {
-                Authorization: `Bearer ${this.$store.getters.getUserToken}`,
-                "Content-Type": "multipart/form-data",
-              },
-            }
-          )
-          .then((response) => {
-            console.log(response);
-            this.versions = response.data;
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      });
-    }
   },
 };
 </script>
