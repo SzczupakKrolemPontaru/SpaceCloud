@@ -1,8 +1,8 @@
-const blob = require("../middleware/blobOperations");
-const bcrypt = require("bcrypt");
+const blob = require('../middleware/blobOperations');
+const bcrypt = require('bcrypt');
 const { LogBook } = require('../models');
-const { sequelize, User } = require("../models");
-const jwt = require("jsonwebtoken");
+const { sequelize, User } = require('../models');
+const jwt = require('jsonwebtoken');
 
 exports.user_register = async (req, res) => {
   const { userName, userPassword } = req.body;
@@ -12,7 +12,7 @@ exports.user_register = async (req, res) => {
 
     if (existingUser) {
       return res.status(409).json({
-        error: "User already exists",
+        error: 'User already exists',
       });
     }
 
@@ -34,11 +34,14 @@ exports.user_register = async (req, res) => {
         { transaction: t }
       );
 
-      await LogBook.create({
-        username: userName,
-        operation: 'register',
-        timestamp: new Date()
-      }, { transaction: t });
+      await LogBook.create(
+        {
+          username: userName,
+          operation: 'register',
+          timestamp: new Date(),
+        },
+        { transaction: t }
+      );
 
       const containerName = newUser.userName.toLowerCase();
       await blob.createContainerIfNotExists(containerName);
@@ -60,13 +63,13 @@ exports.user_login = async (req, res) => {
     const user = await User.findOne({ where: { userName } });
     if (!user) {
       return res.status(403).json({
-        error: "Invalid login",
+        error: 'Invalid login',
       });
     }
     bcrypt.compare(userPassword, user.userPassword, (err, result) => {
       if (err) {
         return res.status(401).json({
-          error: "Auth failed",
+          error: 'Auth failed',
         });
       }
       if (result) {
@@ -76,7 +79,7 @@ exports.user_login = async (req, res) => {
             userId: user.id,
           },
           process.env.ACCESS_TOKEN,
-          { expiresIn: "30s" }
+          { expiresIn: '1d' }
         );
         const refreshToken = jwt.sign(
           {
@@ -84,28 +87,28 @@ exports.user_login = async (req, res) => {
             userId: user.id,
           },
           process.env.REFRESH_TOKEN,
-          { expiresIn: "1d" }
+          { expiresIn: '1d' }
         );
         user.refreshToken = refreshToken;
 
         LogBook.create({
           username: userName,
           operation: 'login',
-          timestamp: new Date()
+          timestamp: new Date(),
         });
 
         user.save();
-        res.cookie("jwt", refreshToken, {
+        res.cookie('jwt', refreshToken, {
           httpOnly: true,
           maxAge: 24 * 60 * 60 * 1000,
         });
         return res.status(200).json({
-          message: "Auth successful",
+          message: 'Auth successful',
           accessToken,
         });
       }
       return res.status(401).json({
-        error: "Auth failed",
+        error: 'Auth failed',
       });
     });
   } catch (error) {
@@ -116,19 +119,20 @@ exports.user_login = async (req, res) => {
 
 exports.handleRefereshToken = async (req, res) => {
   const cookies = req.cookies;
-  if (!cookies?.jwt) return res.status(401).json({ error: "Auth failed" });
+  console.log(cookies);
+  if (!cookies?.jwt) return res.status(401).json({ error: 'Auth failed' });
   const refreshToken = cookies.jwt;
   try {
     const user = await User.findOne({ where: { refreshToken: refreshToken } });
     if (!user) {
       return res.status(403).json({
-        error: "Invalid login",
+        error: 'Invalid login',
       });
     }
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN, (err, data) => {
       if (err || user.userName !== data.userName) {
         return res.status(403).json({
-          error: "Auth failed",
+          error: 'Auth failed',
         });
       } else {
         const accessToken = jwt.sign(
@@ -137,7 +141,7 @@ exports.handleRefereshToken = async (req, res) => {
             userId: data.id,
           },
           process.env.ACCESS_TOKEN,
-          { expiresIn: "30s" }
+          { expiresIn: '30s' }
         );
         res.json({ accessToken });
       }
@@ -156,12 +160,12 @@ exports.user_logout = async (req, res) => {
   try {
     const user = await User.findOne({ where: { refreshToken: refreshToken } });
     if (!user) {
-      res.clearCookie("jwt", { httpOnly: true, maxAge: 0 });
+      res.clearCookie('jwt', { httpOnly: true, maxAge: 0 });
       return res.status(204).end();
     }
     user.refreshToken = null;
     await user.save();
-    res.clearCookie("jwt", { httpOnly: true, maxAge: 0 });
+    res.clearCookie('jwt', { httpOnly: true, maxAge: 0 });
     return res.status(204).end();
   } catch (error) {
     return res.status(500).json(error);

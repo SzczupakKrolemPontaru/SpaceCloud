@@ -71,9 +71,8 @@ export default {
             this.showAlert = true;
           }
         })
-        .catch((error) => {
+        .catch(() => {
           alert('User does not exist');
-          console.log(error);
         });
     },
   },

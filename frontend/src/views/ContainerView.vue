@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Personal Cloud Storage of {{ userName }}</h1>
+    <h1>Personal Cloud Storage of {{ this.$store.getters.getUserName }}</h1>
     <table class="table table-bordered table-hover table_transparent">
       <tbody>
         <tr v-for="(file, index) in blobFiles" :key="index">
@@ -75,15 +75,17 @@ export default {
       })
       .then((response) => {
         this.blobFiles = response.data;
-            this.blobFiles = this.blobFiles.map((file) => ({
+        this.blobFiles = this.blobFiles.map((file) => ({
           ...file,
           selectedVersion: file.versionId,
         }));
-        this.refreshToken();
       })
       .catch((error) => {
         console.log(error);
       });
+    axios.get('http://localhost:3000/users/').catch((error) => {
+      console.error(error);
+    });
   },
   methods: {
     deleteFile(fileName) {
@@ -96,8 +98,7 @@ export default {
             },
           }
         )
-        .then((response) => {
-          console.log(response);
+        .then(() => {
           this.refreshTableData();
         })
         .catch((error) => {
@@ -114,9 +115,9 @@ export default {
         .then((response) => {
           this.blobFiles = response.data;
           this.blobFiles = this.blobFiles.map((file) => ({
-          ...file,
-          selectedVersion: file.versionId,
-        }));
+            ...file,
+            selectedVersion: file.versionId,
+          }));
         })
         .catch((error) => {
           console.error(error);
@@ -152,8 +153,11 @@ export default {
     downloadFile(fileName) {
       axios
         .get(
-          `http://localhost:3000/blobs/${this.$store.getters.getUserName}/${fileName}/${
-            this.blobFiles.find((file) => file.name === fileName).selectedVersion
+          `http://localhost:3000/blobs/${
+            this.$store.getters.getUserName
+          }/${fileName}/${
+            this.blobFiles.find((file) => file.name === fileName)
+              .selectedVersion
           }`,
           {
             headers: {

@@ -73,8 +73,7 @@ export default {
       };
       axios
         .post("http://localhost:3000/users/register", formData)
-        .then((response) => {
-          console.log(response);
+        .then(() => {
           this.$router.push({ name: "login", query: { userCreated: true } });
         })
         .catch((err) => {
