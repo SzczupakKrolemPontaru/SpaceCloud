@@ -79,7 +79,7 @@ exports.user_login = async (req, res) => {
             userId: user.id,
           },
           process.env.ACCESS_TOKEN,
-          { expiresIn: '1d' }
+          { expiresIn: '30s' }
         );
         const refreshToken = jwt.sign(
           {
@@ -141,7 +141,7 @@ exports.handleRefereshToken = async (req, res) => {
             userId: data.id,
           },
           process.env.ACCESS_TOKEN,
-          { expiresIn: '30s' }
+          { expiresIn: '1d' }
         );
         res.json({ accessToken });
       }

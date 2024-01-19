@@ -83,9 +83,15 @@ export default {
       .catch((error) => {
         console.log(error);
       });
-    axios.get('http://localhost:3000/users/').catch((error) => {
-      console.error(error);
-    });
+    axios
+      .get('http://localhost:3000/users/')
+      .then((response) => {
+        this.$store.dispatch('setToken', response.data.accessToken);
+        console.log(response);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   },
   methods: {
     deleteFile(fileName) {
