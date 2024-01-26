@@ -1,6 +1,5 @@
 const { BlobServiceClient } = require("@azure/storage-blob");
 const config = require("../config/config.json");
-const { verify } = require("jsonwebtoken");
 const blobServiceClient = BlobServiceClient.fromConnectionString(
   config.development.azureStorage.connectionString
 );

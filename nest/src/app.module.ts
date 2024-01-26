@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/typeorm/entities/User';
 import { Logbook } from 'src/typeorm/entities/Logbook';
 import { UsersModule } from './users/users.module';
+import { BlobModule } from './blob/blob.module';
 
 @Module({
   imports: [TypeOrmModule.forRoot({
@@ -14,7 +15,7 @@ import { UsersModule } from './users/users.module';
     database: 'users-authentication-db',
     entities: [User, Logbook],
     synchronize: true,
-  }), UsersModule],
+  }), UsersModule, BlobModule],
   controllers: [],
   providers: [],
 })
