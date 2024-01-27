@@ -5,11 +5,11 @@ import { UsersService } from 'src/users/services/users/users.service';
 @Controller('users')
 export class UsersController {
     constructor(private usersService: UsersService) { }
-    @Get()
-    async getAllUsers(@Body() createUserDto: CreateUserDto) {
+    @Post('login')
+    async loginUser(@Body() createUserDto: CreateUserDto) {
         return this.usersService.loginUser(createUserDto)
     }
-    @Post()
+    @Post('register')
     createUser(@Body() createUserDto: CreateUserDto) {
         return this.usersService.createUser(createUserDto);
     }

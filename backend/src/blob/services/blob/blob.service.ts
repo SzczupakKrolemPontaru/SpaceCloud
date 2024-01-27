@@ -51,7 +51,7 @@ export class BlobService {
 
     async uploadFile(userName: string, file: Multer.File) {
         const containerClient = this.blobServiceClient.getContainerClient(userName);
-        const blockBlobClient = containerClient.getBlockBlobClient(userName);
+        const blockBlobClient = containerClient.getBlockBlobClient(file.originalname);
         await blockBlobClient.upload(file.buffer, file.buffer.length);
     }
 

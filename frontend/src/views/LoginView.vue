@@ -60,8 +60,10 @@ export default {
       axios
         .post(`http://localhost:3000/users/login`, formData)
         .then((response) => {
+          console.log(response);
           const userData = response.data;
-          if (userData.message === 'Auth successful') {
+          if (userData.userName === formData.userName) {
+            console.log('User exists');
             this.$store.commit('setUserName', formData.userName);
             this.$store.commit('setToken', userData.accessToken);
             this.$router.push({
@@ -71,7 +73,8 @@ export default {
             this.showAlert = true;
           }
         })
-        .catch(() => {
+        .catch((err) => {
+          console.log(err);
           alert('User does not exist');
         });
     },

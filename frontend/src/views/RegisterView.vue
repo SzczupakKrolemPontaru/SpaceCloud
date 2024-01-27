@@ -72,16 +72,17 @@ export default {
         userPassword: this.password,
       };
       axios
-        .post("http://localhost:3000/users/register", formData)
+        .post("http://localhost:3000/users", formData)
         .then(() => {
           this.$router.push({ name: "login", query: { userCreated: true } });
         })
         .catch((err) => {
-          if (err.response.status == 409) {
+          console.log(err);
+          if (err.response && err.response.status == 409) {
             alert("Username already exists, please try again!");
             this.uName = "";
             (this.password = ""), (this.passwordConfirm = "");
-          } else if (err.response.status == 500) {
+          } else if (err.response && err.response.status == 500) {
             alert("Server error, please try again later!");
           } else {
             alert("Unknown error, please try again later!");

@@ -1,12 +1,15 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/typeorm/entities/User';
-import { CreateUserDto} from 'src/users/dtos/CreateUser.dto';
-import { ResponseUserDto } from 'src/users/dtos/ResponseUser.dto';
 import { Repository, EntityManager } from 'typeorm';
 import { BlobService } from 'src/blob/services/blob/blob.service';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
+import { CreateUserDto} from 'src/users/dtos/CreateUser.dto';
+import { CreateUserResponseDto } from 'src/users/dtos/CreateUserResponse.dto';
+import { LoginUserDto } from 'src/users/dtos/LoginUser.dto';
+import { LoginUserResponseDto } from 'src/users/dtos/LoginUserResponse.dto';
+
 @Injectable()
 export class UsersService {
 
@@ -17,7 +20,7 @@ export class UsersService {
         private blobService: BlobService 
     ) {}
 
-    async loginUser(userDetails: CreateUserDto): Promise<ResponseUserDto> {
+    async loginUser(userDetails: LoginUserDto): Promise<LoginUserResponseDto> {
         require('dotenv').config();
         try {
             const user = await this.userRepository.findOne({where: {userName: userDetails.userName}});
@@ -32,6 +35,7 @@ export class UsersService {
             try {
                 passwordMatch = await bcrypt.compare(userDetails.userPassword, user.userPassword);
             } catch (error) {
+                console.log(error + 'Error comparing passwords');
                 throw new HttpException(
                     'Error comparing passwords',
                     HttpStatus.UNAUTHORIZED
@@ -70,23 +74,24 @@ export class UsersService {
                     HttpStatus.INTERNAL_SERVER_ERROR
                 );
             }
-            return { userName: user.userName };
+            return { userName: user.userName, accessToken: accessToken};
         } catch (error) {
             throw new HttpException(
-                error.message,
-                error.status
+                'Error logging in',
+                HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
     }
 
-    async createUser(userDetails: CreateUserDto): Promise<ResponseUserDto>  {
+    async createUser(userDetails: CreateUserDto): Promise<CreateUserResponseDto>  {
         return this.manager.transaction(async transactionalEntityManager => {
+            console.log('userDetails', userDetails);
             const userExists = await transactionalEntityManager.findOne(User, {where: {userName: userDetails.userName}});
 
             if (userExists) {
                 throw new HttpException(
                     'User already exists',
-                    HttpStatus.BAD_REQUEST
+                    HttpStatus.CONFLICT
                 );
             }
 

@@ -8,7 +8,7 @@ import { BlobModule } from 'src/blob/blob.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
-    BlobModule, // Add BlobModule to the imports array
+    BlobModule,
   ],
   controllers: [UsersController],
   providers: [UsersService]

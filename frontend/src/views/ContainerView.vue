@@ -68,7 +68,7 @@ export default {
   },
   mounted() {
     axios
-      .get(`http://localhost:3000/blobs/${this.$store.getters.getUserName}`, {
+      .get(`http://localhost:3000/blob/${this.$store.getters.getUserName}`, {
         headers: {
           Authorization: `Bearer ${this.$store.getters.getUserToken}`,
         },
@@ -97,7 +97,7 @@ export default {
     deleteFile(fileName) {
       axios
         .delete(
-          `http://localhost:3000/blobs/${this.$store.getters.getUserName}/${fileName}`,
+          `http://localhost:3000/blob/${this.$store.getters.getUserName}/${fileName}`,
           {
             headers: {
               Authorization: `Bearer ${this.$store.getters.getUserToken}`,
@@ -113,7 +113,7 @@ export default {
     },
     refreshTableData() {
       axios
-        .get(`http://localhost:3000/blobs/${this.$store.getters.getUserName}`, {
+        .get(`http://localhost:3000/blob/${this.$store.getters.getUserName}`, {
           headers: {
             Authorization: `Bearer ${this.$store.getters.getUserToken}`,
           },
@@ -138,7 +138,7 @@ export default {
         formData.append('file', file);
         axios
           .post(
-            `http://localhost:3000/blobs/${this.$store.getters.getUserName}`,
+            `http://localhost:3000/blob/${this.$store.getters.getUserName}`,
             formData,
             {
               headers: {
@@ -159,7 +159,7 @@ export default {
     downloadFile(fileName) {
       axios
         .get(
-          `http://localhost:3000/blobs/${
+          `http://localhost:3000/blob/${
             this.$store.getters.getUserName
           }/${fileName}/${
             this.blobFiles.find((file) => file.name === fileName)
