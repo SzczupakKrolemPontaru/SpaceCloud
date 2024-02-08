@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { BlobServiceClient } from '@azure/storage-blob';
 import * as dotenv from 'dotenv';
 import { Multer } from 'multer';
+import { Response } from 'express';
 
 dotenv.config();
 
@@ -61,10 +62,10 @@ export class BlobService {
         await blockBlobClient.delete();
     }
 
-    async downloadFile(userName: string, fileName: string, versionId: string) {
+    async downloadFile(userName: string, fileName: string, versionId: string, res: Response) {
         const containerClient = this.blobServiceClient.getContainerClient(userName);
         const blockBlobClient = containerClient.getBlockBlobClient(fileName).withVersion(versionId);
-        const response = await blockBlobClient.download();
-        return response.readableStreamBody;
+        const downloadBlockBlobResponse = await blockBlobClient.download(0);
+        downloadBlockBlobResponse.readableStreamBody.pipe(res);
     }
 }

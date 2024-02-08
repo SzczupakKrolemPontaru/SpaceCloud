@@ -1,6 +1,7 @@
-import { Controller, Delete, Get, Param, Post, Put, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express/multer/interceptors';
 import { BlobService } from 'src/blob/services/blob/blob.service';
+import { Response } from 'express';
 
 @Controller('blob')
 export class BlobController {
@@ -23,8 +24,8 @@ export class BlobController {
     }
 
     @Get(':userName/:fileName/:versionId')
-    async downloadFile(@Param('userName') userName: string, @Param('fileName') fileName: string, @Param('versionId') versionId: string){
-        return this.blobService.downloadFile(userName, fileName, versionId);
+    async downloadFile(@Param('userName') userName: string, @Param('fileName') fileName: string, @Param('versionId') versionId: string, @Res() res: Response){
+        return this.blobService.downloadFile(userName, fileName, versionId, res);
     }
 }
 
