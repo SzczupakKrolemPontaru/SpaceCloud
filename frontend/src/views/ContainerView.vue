@@ -59,6 +59,8 @@
 import axios from 'axios';
 import saveAs from 'file-saver';
 import moment from 'moment';
+import Notiflix from 'notiflix';
+
 export default {
   data() {
     return {
@@ -83,15 +85,6 @@ export default {
       .catch((error) => {
         console.log(error);
       });
-    axios
-      .get('http://localhost:3000/users/')
-      .then((response) => {
-        this.$store.dispatch('setToken', response.data.accessToken);
-        console.log(response);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
   },
   methods: {
     deleteFile(fileName) {
@@ -105,6 +98,7 @@ export default {
           }
         )
         .then(() => {
+          this.refreshToken();
           this.refreshTableData();
         })
         .catch((error) => {
@@ -148,11 +142,22 @@ export default {
             }
           )
           .then((response) => {
+            this.refreshToken();
             this.refreshTableData();
             return response.data;
           })
           .catch((error) => {
             console.error(error);
+            if (error.response.status === 403) {
+              Notiflix.Report.failure(
+                'Error',
+                'Your session is expired, please login again',
+                '<-- Login page',
+                () => {
+                  this.$router.push({ name: 'login' });
+                }
+              );
+            }
           });
       }
     },
@@ -181,20 +186,28 @@ export default {
         });
     },
     async refreshToken() {
+      let refreshTokenData = {
+        userName: this.$store.getters.getUserName,
+        token: this.$store.getters.getUserToken,
+      };
       axios
-        .get('http://localhost:3000/users/')
+        .post(`http://localhost:3000/users/token`, refreshTokenData)
         .then((response) => {
-          this.$store.dispatch('setToken', response.data.accessToken);
+          this.$store.dispatch('setToken', response.data.token);
         })
         .catch((error) => {
           console.error(error);
         });
     },
     logout() {
+      let logoutData = {
+        userName: this.$store.getters.getUserName,
+        token: this.$store.getters.getUserToken,
+      };
       this.$store.dispatch('clearToken');
       this.$store.dispatch('clearUserName');
+      axios.delete('http://localhost:3000/users/logout', logoutData);
       this.$router.push({ name: 'login' });
-      axios.delete('http://localhost:3000/users/logout');
     },
     formatDate(dateString) {
       const date = moment(dateString);

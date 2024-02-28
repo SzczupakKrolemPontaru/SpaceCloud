@@ -11,7 +11,7 @@ import { BlobModule } from './blob/blob.module';
     host: "users-authentication.database.windows.net",
     port: 1433,
     username: "admin1234",
-    password: "dupa1234.",
+    password: "3Wfgag;2ynR3",
     database: 'users-authentication-db',
     entities: [User, Logbook],
     synchronize: true,

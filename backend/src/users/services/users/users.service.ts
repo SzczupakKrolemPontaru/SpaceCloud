@@ -4,12 +4,13 @@ import { User } from 'src/typeorm/entities/User';
 import { Repository, EntityManager } from 'typeorm';
 import { BlobService } from 'src/blob/services/blob/blob.service';
 import * as bcrypt from 'bcrypt';
-import * as jwt from 'jsonwebtoken';
+import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto} from 'src/users/dtos/CreateUser.dto';
 import { CreateUserResponseDto } from 'src/users/dtos/CreateUserResponse.dto';
 import { LoginUserDto } from 'src/users/dtos/LoginUser.dto';
 import { LoginUserResponseDto } from 'src/users/dtos/LoginUserResponse.dto';
-
+import { LogoutUserDto } from 'src/users/dtos/LogoutUser.dto';
+import { RefreshTokenDto } from 'src/users/dtos/RefreshToken.dto';
 @Injectable()
 export class UsersService {
 
@@ -17,7 +18,8 @@ export class UsersService {
         @InjectRepository(User) 
         private userRepository: Repository<User>,
         private manager: EntityManager,
-        private blobService: BlobService 
+        private blobService: BlobService,
+        private jwtService: JwtService,
     ) {}
 
     async loginUser(userDetails: LoginUserDto): Promise<LoginUserResponseDto> {
@@ -48,24 +50,9 @@ export class UsersService {
                     HttpStatus.UNAUTHORIZED
                 );
             }
-            let accessToken, refreshToken;
+            let refreshToken;
             try {
-                accessToken = jwt.sign(
-                    {
-                        userName: user.userName,
-                        userUuid: user.uuid
-                    },
-                    process.env.ACCESS_TOKEN,
-                    { expiresIn: '1h' }
-                );
-                refreshToken = jwt.sign(
-                    {
-                        userName: user.userName,
-                        userUuid: user.uuid
-                    },
-                    process.env.REFRESH_TOKEN,
-                    { expiresIn: '1d' }
-                );
+                refreshToken = this.jwtService.sign({userName: user.userName});
                 user.refreshToken = refreshToken;
                 await this.userRepository.save(user);
             } catch (error) {
@@ -74,7 +61,7 @@ export class UsersService {
                     HttpStatus.INTERNAL_SERVER_ERROR
                 );
             }
-            return { userName: user.userName, accessToken: accessToken};
+            return { userName: user.userName, token: refreshToken};
         } catch (error) {
             throw new HttpException(
                 'Error logging in',
@@ -85,7 +72,6 @@ export class UsersService {
 
     async createUser(userDetails: CreateUserDto): Promise<CreateUserResponseDto>  {
         return this.manager.transaction(async transactionalEntityManager => {
-            console.log('userDetails', userDetails);
             const userExists = await transactionalEntityManager.findOne(User, {where: {userName: userDetails.userName}});
 
             if (userExists) {
@@ -120,4 +106,75 @@ export class UsersService {
         });
     }
 
+    async logoutUser(logoutUser: LogoutUserDto) {
+        try {
+            const user = await this.userRepository.findOne({where: {userName: logoutUser.userName}});
+            if (!user) {
+                throw new HttpException(
+                    'User not found',
+                    HttpStatus.NOT_FOUND
+                );
+            }
+            user.refreshToken = null;
+            await this.userRepository.save(user);
+        } catch (error) {
+            throw new HttpException(
+                'Error logging out',
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    async refreshToken(refreshTokenDto: RefreshTokenDto) {
+        try {
+            const user = await this.userRepository.findOne({where: {userName: refreshTokenDto.userName}});
+            if (!user) {
+                console.log('User not found');
+                throw new HttpException(
+                    'User not found',
+                    HttpStatus.NOT_FOUND
+                );
+            }
+
+            try {
+                const payload = this.jwtService.verify(refreshTokenDto.token);
+                if (payload.userName !== user.userName) {
+                    console.log('Invalid token');
+                    throw new HttpException(
+                        'Invalid token',
+                        HttpStatus.UNAUTHORIZED
+                    );
+                }
+            } catch (error) {
+                console.log('Error verifying token');
+                throw new HttpException(
+                    'Error verifying token',
+                    HttpStatus.UNAUTHORIZED
+                );
+            }
+
+            let refreshToken;
+            try {
+                refreshToken = this.jwtService.sign({userName: user.userName});
+                user.refreshToken = refreshToken;
+                await this.userRepository.save(user);
+            } catch (error) {
+                console.log('Error signing tokens');
+                throw new HttpException(
+                    'Error signing tokens',
+                    HttpStatus.INTERNAL_SERVER_ERROR
+                );
+            }
+
+            console.log('Token refreshed');
+            return { userName: user.userName, token: refreshToken};
+        }
+        catch (error) {
+            console.log('Error refreshing token');
+            throw new HttpException(
+                'Error refreshing token',
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 }

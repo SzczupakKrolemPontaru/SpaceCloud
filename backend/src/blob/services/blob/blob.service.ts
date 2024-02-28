@@ -46,7 +46,7 @@ export class BlobService {
           const fileVersions = versions.filter(version => version.name === file.name);
           return {...file, versions: fileVersions};
         });
-      
+        
         return filesWithVersions;
     }
 
