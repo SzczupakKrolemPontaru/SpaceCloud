@@ -83,7 +83,8 @@ export default {
         }));
       })
       .catch((error) => {
-        console.log(error);
+          console.error(error);
+          this.notifyUser(error);
       });
   },
   methods: {
@@ -103,6 +104,7 @@ export default {
         })
         .catch((error) => {
           console.error(error);
+          this.notifyUser(error);
         });
     },
     refreshTableData() {
@@ -121,6 +123,7 @@ export default {
         })
         .catch((error) => {
           console.error(error);
+          this.notifyUser(error);
         });
     },
     handleFileUpload(event) {
@@ -148,16 +151,7 @@ export default {
           })
           .catch((error) => {
             console.error(error);
-            if (error.response.status === 403) {
-              Notiflix.Report.failure(
-                'Error',
-                'Your session is expired, please login again',
-                '<-- Login page',
-                () => {
-                  this.$router.push({ name: 'login' });
-                }
-              );
-            }
+            this.notifyUser(error);
           });
       }
     },
@@ -183,6 +177,7 @@ export default {
         })
         .catch((error) => {
           console.error(error);
+          this.notifyUser(error);
         });
     },
     async refreshToken() {
@@ -197,6 +192,7 @@ export default {
         })
         .catch((error) => {
           console.error(error);
+          this.notifyUser(error);
         });
     },
     logout() {
@@ -212,6 +208,32 @@ export default {
     formatDate(dateString) {
       const date = moment(dateString);
       return date.format('YYYY-MM-DD HH:mm:ss');
+    },
+    notifyUser(error) {
+      switch (error.response.status) {
+        case 403:
+          Notiflix.Report.failure(
+            'Session expired',
+            'Please log in again',
+            'OK',
+            () => {
+              this.$router.push({ name: 'login' });
+            }
+          );
+          break;
+        case 404:
+          Notiflix.Report.failure(
+            'Error',
+            'File not found',
+            'OK',
+            () => {
+              console.log('File not found');
+            }
+          );
+          break;
+        default:
+          console.error(error);
+      }
     },
   },
 };

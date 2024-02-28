@@ -16,7 +16,6 @@ export class JwtRefreshGuard implements CanActivate {
       request.user = payload;
       return true;
     } catch (error) {
-      console.log(error);
       return false;
     }
   }

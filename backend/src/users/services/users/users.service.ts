@@ -165,8 +165,7 @@ export class UsersService {
                     HttpStatus.INTERNAL_SERVER_ERROR
                 );
             }
-
-            console.log('Token refreshed');
+            
             return { userName: user.userName, token: refreshToken};
         }
         catch (error) {
