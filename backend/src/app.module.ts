@@ -7,12 +7,12 @@ import { BlobModule } from './blob/blob.module';
 
 @Module({
   imports: [TypeOrmModule.forRoot({
-    type: 'mssql',
-    host: "users-authentication.database.windows.net",
-    port: 1433,
-    username: "admin1234",
-    password: "3Wfgag;2ynR3",
-    database: 'users-authentication-db',
+    type: process.env.DATABASE_TYPE as any,
+    host: process.env.DATABASE_HOST,
+    port: Number(process.env.DATABASE_PORT),
+    username: process.env.DATABASE_USERNAME,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_NAME,
     entities: [User, Logbook],
     synchronize: true,
   }), UsersModule, BlobModule],
