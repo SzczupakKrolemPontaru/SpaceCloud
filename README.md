@@ -3,7 +3,7 @@
 This project is a full-stack application built with NestJS for the backend and Vue.js for the frontend. It demonstrates a well-structured codebase with a focus on modularity, clean code, and best practices.
 
 ## Backend
-The backend is built with NestJS, a progressive Node.js framework for building efficient, reliable, and scalable server-side applications. It uses TypeORM for database operations and JWT for authentication.
+The backend is built with NestJS, for building efficient, reliable, and scalable server-side applications. It uses TypeORM for database operations and JWT for authentication.
 
 ### Key features of the backend include:
 - User authentication with JWT
@@ -13,7 +13,7 @@ The backend is built with NestJS, a progressive Node.js framework for building e
 The backend code is located in the `backend` directory.
 
 ## Frontend
-The frontend is built with Vue.js, a progressive JavaScript framework for building user interfaces. It uses Vue Router for routing and Vuex for state management.
+The frontend is built with Vue.js, for building user interfaces. It uses Vue Router for routing and Vuex for state management.
 
 ### Key features of the frontend include:
 - User registration and login
