@@ -1,4 +1,4 @@
-# SPC_TUL_Course
+# SpaceCloud
 
 This project is a full-stack application built with NestJS for the backend and Vue.js for the frontend. It demonstrates a well-structured codebase with a focus on modularity, clean code, and best practices.
 
