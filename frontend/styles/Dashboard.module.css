@@ -1,0 +1,51 @@
+.leftPanel {
+  height: 100%;
+  width: 20%;
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  background: #ffffff;
+  display: grid;
+  align-items: center;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(5, 1fr);
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
+  box-shadow: 10px 0px 5px 0px rgba(124, 120, 120, 0.75);
+}
+
+.dragAndDrop {
+  background: linear-gradient(0deg, #5d60ef, #5d60ef),
+    radial-gradient(
+      50% 200% at 0% 0%,
+      rgba(11, 13, 116, 0.5) 0%,
+      rgba(123, 126, 242, 0.5) 100%
+    ),
+    radial-gradient(
+      50% 63.78% at 100% 100%,
+      rgba(65, 66, 165, 0.2) 0%,
+      rgba(61, 63, 197, 0.2) 100%
+    );
+
+  border-radius: 10px;
+  height: 90%;
+  width: 75%;
+  position: relative;
+  left: 15%;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  text-align: center;
+  align-items: center;
+  color: white;
+}
+
+.icons {
+  display: block;
+}
+
+#test {
+  background-color: black;
+  color: white;
+  width: 40%;
+}

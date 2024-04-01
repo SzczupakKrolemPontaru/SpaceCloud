@@ -1,10 +1,7 @@
 'use client';
+import axios from 'axios';
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import axios from '../../../lib/axios';
 import styles from '../../../styles/Auth.module.css';
-import { setToken } from '../../store/tokenSlice';
-import { setUser } from '../../store/userSlice';
 import AuthFooter from '../components/public/AuthFooter';
 import AuthSectionTitle from '../components/public/AuthSectionTitle';
 import BackgroundImages from '../components/public/BackgroundImages';
@@ -18,10 +15,9 @@ interface LoginProps {
 
 export default function Login() {
   const [userName, setUserName] = useState('');
-  const [userPassword, setPassword] = useState('');
+  const [userPassword, setPassword1] = useState('');
+  const [password, setPassword2] = useState('');
   const [loginError, setLoginError] = useState(false);
-  const dispatch = useDispatch();
-
   const inputsData = [
     {
       labelText: 'Username',
@@ -39,14 +35,27 @@ export default function Login() {
       type: 'password',
       value: userPassword,
       onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-        setPassword(e.target.value),
+        setPassword1(e.target.value),
+    },
+    {
+      labelText: 'Enter password again',
+      icon: 'pass.svg',
+      placeholder: '********',
+      type: 'password',
+      value: password,
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+        setPassword2(e.target.value),
     },
   ];
 
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (userName === '' || userPassword === '') {
+    if (userName === '' || userPassword === '' || password === '') {
       alert('Please fill in all fields');
+      return;
+    }
+    if (userPassword !== password) {
+      alert('Passwords do not match');
       return;
     }
     const formData: LoginProps = {
@@ -55,32 +64,29 @@ export default function Login() {
     };
     setLoginError(false);
     axios
-      .post(`/users/login`, formData)
+      .post(`http://localhost:3000/users/register`, formData)
       .then((res) => {
         if (res.status === 201) {
-          dispatch(setToken(res.data.token));
-          dispatch(setUser(res.data.userName));
-          window.location.href = '/dashboard';
+          alert('User registered successfully');
+          window.location.href = '/login';
+        } else if (res.status === 409) {
+          alert('User already exists');
         }
       })
       .catch((err) => {
         setLoginError(true);
       });
   };
-
   return (
     <>
       <div className={styles.flexbox}>
         <div
           className={`${styles.authSection} ${loginError ? styles.error : ''}`}
-          style={{ height: '60%' }}
+          style={{ height: '65%' }}
         >
           <AuthSectionTitle />
-          <FormComponent
-            inputs={inputsData}
-            welcomeText='Log in to access your account.'
-          />
-          <AuthFooter type='login' onClick={handleSubmit} />
+          <FormComponent inputs={inputsData} welcomeText='Create an account' />
+          <AuthFooter type='register' onClick={handleSubmit} />
         </div>
       </div>
       <BackgroundImages />

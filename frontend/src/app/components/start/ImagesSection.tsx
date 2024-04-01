@@ -1,6 +1,6 @@
 import React from 'react';
-import styles from '../../../styles/Start.module.css';
-import IconSection from './IconsSection';
+import styles from '../../../../styles/Start.module.css';
+import IconSection from '../public/IconsSection';
 
 export default function ImagesSection() {
   return (

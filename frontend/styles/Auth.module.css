@@ -1,10 +1,3 @@
-:root .rootDiv {
-  --purpleColor: #5d60ef;
-  --blackColor: #151c48;
-  --greyColor: #676767;
-  --navyColor: #0f142f;
-}
-
 .flexbox {
   display: flex;
   justify-content: center;
@@ -12,13 +5,12 @@
   z-index: 1;
 }
 
-.chart {
+.authSection {
   position: absolute;
   width: 23%;
-  height: 60%;
-  background-color: #ffffff;
+  background-color: var(--whiteColor);
   top: 20%;
-  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.75);
+  box-shadow: 0px 0px 10px 0px var(--blackColor);
   z-index: 1;
   border-radius: 10px;
 }
@@ -27,13 +19,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 3%;
+  margin-top: 2%;
 }
 
 .titleDiv p {
   font-size: 2vw;
   line-height: 6vw;
-  color: var(--blackColor);
+  color: var(--navyColor1);
   font-weight: 700;
   margin: 0;
 }
@@ -59,7 +51,7 @@
   font-size: 1.4vw;
   line-height: 4vw;
   font-weight: 700;
-  color: var(--blackColor);
+  color: var(--navyColor1);
   font-weight: bold;
   margin: 0;
 }
@@ -69,17 +61,18 @@
   font-weight: 400;
   margin: 0;
   margin-top: -5%;
+  color: var(--navyColor1);
 }
 
-.label {
+.inputLabel {
   font-size: 0.8vw;
   font-weight: 600;
-  color: var(--blackColor);
+  color: var(--navyColor1);
   margin: 0;
 }
 
 .inputDiv {
-  border-bottom: 2px solid var(--navyColor);
+  border-bottom: 2px solid var(--navyColor2);
   border-radius: 5px 5px;
   margin-top: 2%;
   margin-bottom: 5%;
@@ -119,8 +112,6 @@
 #buttonDiv {
   display: flex;
   justify-content: center;
-  margin-top: 4%;
-  margin-bottom: 3%;
 }
 
 #submitButton {
@@ -128,7 +119,7 @@
   align-items: center;
   justify-content: center;
   background-color: var(--purpleColor);
-  color: white;
+  color: var(--whiteColor);
   border: none;
   border-radius: 15px;
   font-size: 0.8vw;
@@ -136,6 +127,7 @@
   width: 80%;
   height: 4.5vh;
   left: 10%;
+  margin-top: 5%;
 }
 
 #submitButton img {
@@ -144,8 +136,9 @@
 
 #navigate {
   display: block;
-  color: var(--blackColor);
+  color: var(--navyColor1);
   font-weight: 500;
+  margin-top: 5%;
 }
 
 #navigate a {
@@ -168,4 +161,44 @@
 #photo2 {
   right: 22%;
   top: 10%;
+}
+
+@keyframes shake {
+  0% {
+    transform: translate(1px, 1px) rotate(0deg);
+  }
+  10% {
+    transform: translate(-1px, -2px) rotate(-1deg);
+  }
+  20% {
+    transform: translate(-3px, 0px) rotate(1deg);
+  }
+  30% {
+    transform: translate(3px, 2px) rotate(0deg);
+  }
+  40% {
+    transform: translate(1px, -1px) rotate(1deg);
+  }
+  50% {
+    transform: translate(-1px, 2px) rotate(-1deg);
+  }
+  60% {
+    transform: translate(-3px, 1px) rotate(0deg);
+  }
+  70% {
+    transform: translate(3px, 1px) rotate(-1deg);
+  }
+  80% {
+    transform: translate(-1px, -1px) rotate(1deg);
+  }
+  90% {
+    transform: translate(1px, 2px) rotate(0deg);
+  }
+  100% {
+    transform: translate(1px, -2px) rotate(-1deg);
+  }
+}
+
+.chart.error {
+  animation: shake 0.5s;
 }

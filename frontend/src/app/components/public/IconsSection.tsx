@@ -1,4 +1,4 @@
-import styles from '../../../styles/Start.module.css';
+import styles from '../../../../styles/Start.module.css';
 
 export default function IconSection() {
   return (
